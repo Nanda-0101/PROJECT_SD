@@ -1,0 +1,7 @@
+/* Halaman Daftar: meter kekuatan password */
+.strength { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.strength span { height: 5px; border-radius: 4px; background: #e4e8f1; transition: background .25s; }
+.strength[data-level="1"] span:nth-child(-n+1) { background: var(--c-obese); }
+.strength[data-level="2"] span:nth-child(-n+2) { background: var(--c-over); }
+.strength[data-level="3"] span:nth-child(-n+3) { background: #7cb342; }
+.strength[data-level="4"] span:nth-child(-n+4) { background: var(--c-normal); }

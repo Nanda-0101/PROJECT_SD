@@ -1,0 +1,13 @@
+/* Halaman Riwayat */
+.sum-tile { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem 1.15rem; height: 100%; }
+.sum-tile .lbl { font-size: .8rem; color: var(--ink-soft); margin-bottom: .2rem; }
+.sum-tile .val { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
+.sum-tile .val .cat-badge { font-size: .9rem; }
+.chart-box { position: relative; height: 270px; }
+.chart-box.short { height: 220px; }
+#historyBody td { white-space: nowrap; }
+.detail-grid { display: grid; grid-template-columns: auto 1fr; gap: .35rem 1.2rem; margin: 0; }
+.detail-grid dt { color: var(--ink-soft); font-weight: 500; }
+.detail-grid dd { margin: 0; font-weight: 600; }
+.mini-bar { height: 8px; background: #edf0f7; border-radius: 99px; overflow: hidden; }
+.mini-bar i { display: block; height: 100%; background: var(--cat); border-radius: 99px; }

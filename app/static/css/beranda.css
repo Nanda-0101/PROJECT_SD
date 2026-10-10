@@ -1,0 +1,16 @@
+/* Halaman Beranda */
+.hero { padding: 3.5rem 0 2.5rem; background: radial-gradient(900px 400px at 85% -10%, #e4e9ff 0%, transparent 60%), var(--bg); }
+.hero-title { font-size: clamp(2rem, 4.6vw, 3.1rem); font-weight: 800; line-height: 1.12; margin-bottom: 1rem; max-width: 16ch; }
+.quick-bmi { box-shadow: 0 10px 40px rgba(64, 84, 214, .10); }
+.quick-bmi .form-range::-webkit-slider-thumb { background: var(--brand); }
+.quick-bmi .form-range::-moz-range-thumb { background: var(--brand); }
+.bmi-value { font-size: 2.6rem; font-weight: 800; line-height: 1; letter-spacing: -.03em; }
+
+.stat-tile { height: 100%; padding: 1.1rem 1.2rem; border-radius: var(--radius-md); background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--tile, var(--brand)); }
+.stat-tile .val { font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.stat-tile .lbl { font-size: .85rem; color: var(--ink-soft); }
+.weights { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; font-size: .9rem; color: var(--ink-soft); }
+.weight-pill { background: var(--brand-soft); color: var(--brand-dark); font-weight: 700; padding: .3rem .8rem; border-radius: 99px; }
+
+.steps { counter-reset: none; }
+.step-num { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--brand-soft); color: var(--brand-dark); font-weight: 800; margin-bottom: .8rem; }

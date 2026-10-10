@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sakit-Learn: klasifikasi status berat badan dengan ensemble LightGBM dan MLP.">
+  <title>Tentang · Sakit-Learn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/common.css" rel="stylesheet">
+  <link href="css/tentang.css" rel="stylesheet">
+</head>
+<body data-page="tentang">
+  <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
+
+  <div id="site-navbar"></div>
+
+  <main id="main">
+<div class="container">
+  <header class="page-head">
+    <h1>Tentang Sakit-Learn</h1>
+    <p class="lead-soft mb-0">Aplikasi web untuk membantu Anda memantau status berat badan secara mandiri, dengan hasil yang transparan.</p>
+  </header>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <section class="card-sl p-4 mb-4" aria-labelledby="modelTitle">
+        <h2 class="h5" id="modelTitle">Dua model, satu hasil</h2>
+        <p>Sakit-Learn menggabungkan dua model machine learning. Setiap model menghitung probabilitas untuk empat kategori:
+          <em>Underweight</em>, <em>Normal weight</em>, <em>Overweight</em>, dan <em>Obese</em>. Hasil akhir adalah rata-rata berbobot keduanya,
+          dan kategori dengan probabilitas tertinggi menjadi hasil.</p>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6"><div class="model-card"><i class="bi bi-lightning-charge-fill"></i><h3 class="h6">LightGBM</h3>
+            <p class="small mb-0">Gradient boosting berbasis pohon keputusan. Cepat dan tajam membaca ambang, misalnya batas BMI.</p></div></div>
+          <div class="col-md-6"><div class="model-card"><i class="bi bi-diagram-3-fill"></i><h3 class="h6">MLP (Multi-Layer Perceptron)</h3>
+            <p class="small mb-0">Jaringan saraf tiruan dengan beberapa lapisan tersembunyi. Menangkap pola non-linear yang halus.</p></div></div>
+        </div>
+        <p class="formula mb-0" id="formula">Probabilitas akhir = (0,5 × LightGBM) + (0,5 × MLP)</p>
+      </section>
+
+      <section class="card-sl p-4 mb-4" aria-labelledby="rangeTitle">
+        <h2 class="h5" id="rangeTitle">Rentang data yang paling andal</h2>
+        <p class="text-body-secondary">Model dilatih dari <strong id="nTrain">2.111</strong> data. Di luar rentang ini, hasil tetap muncul tetapi bisa kurang akurat.</p>
+        <div class="table-responsive"><table class="table mb-0 align-middle">
+          <thead><tr><th>Data</th><th>Rentang terbaik</th></tr></thead><tbody id="rangeRows">
+            <tr><td colspan="2"><span class="skeleton d-block" style="height:20px"></span></td></tr></tbody></table></div>
+      </section>
+
+      <section class="card-sl p-4" aria-labelledby="faqTitle">
+        <h2 class="h5 mb-3" id="faqTitle">Pertanyaan yang sering diajukan</h2>
+        <div class="accordion" id="faq">
+          <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq-cara">Bagaimana sistem menentukan kategori?</button></h3>
+            <div id="faq-cara" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">
+              Dua model menghasilkan probabilitas untuk tiap kategori, lalu digabung dengan bobot 0,5 : 0,5. Kategori dengan probabilitas tertinggi menjadi hasil akhir, dan nilainya ditampilkan sebagai tingkat keyakinan.</div></div></div>
+          <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq-login">Apakah saya harus masuk untuk mencoba?</button></h3>
+            <div id="faq-login" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">
+              Untuk memakai <strong>Klasifikasi</strong> dan menyimpan <strong>Riwayat</strong>, Anda perlu akun. Halaman Beranda dan Tentang terbuka untuk umum. Kalkulator BMI cepat di Beranda bisa dipakai tanpa akun.</div></div></div>
+          <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq-data">Apakah data saya aman?</button></h3>
+            <div id="faq-data" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">
+              Data klasifikasi disimpan di database server aplikasi ini dan hanya bisa dibuka oleh akun Anda. Password disimpan dalam bentuk hash, bukan teks asli. Anda bisa menghapus riwayat kapan saja dari halaman Riwayat.</div></div></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col-lg-4">
+      <div class="card-sl p-4 disclaimer">
+        <h2 class="h5"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Batasan penting</h2>
+        <ul class="ps-3 mb-0">
+          <li class="mb-2"><strong>Hasil bersifat indikatif.</strong> Bukan pengganti diagnosis medis.</li>
+          <li class="mb-2"><strong>Model bisa salah,</strong> terutama pada kasus ekstrem atau data di luar rentang latih.</li>
+          <li><strong>Konsultasikan ke dokter</strong> atau ahli gizi untuk penanganan lebih lanjut.</li>
+        </ul>
+      </div>
+      <div class="card-sl p-4 mt-4 text-center">
+        <p class="mb-3">Siap mencoba?</p>
+        <a href="klasifikasi.html" class="btn btn-primary w-100">Mulai klasifikasi</a>
+      </div>
+    </aside>
+  </div>
+</div>
+</main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/tentang.js"></script>
+</body>
+</html>
