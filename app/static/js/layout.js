@@ -3,7 +3,8 @@
    Butuh server (Live Server). Membuka file HTML dengan klik dua kali tidak bisa memuat komponen. */
 (() => {
   "use strict";
-  const slots = { "site-navbar": "components/navbar.html", "site-footer": "components/footer.html" };
+  const base = ((window.SL_CONFIG && window.SL_CONFIG.COMPONENTS_PATH) || "components/").replace(/\/?$/, "/");
+  const slots = { "site-navbar": base + "navbar.html", "site-footer": base + "footer.html" };
 
   async function load(id, url) {
     const el = document.getElementById(id);

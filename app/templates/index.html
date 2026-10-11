@@ -3,119 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Sakit-Learn: klasifikasi status berat badan dengan ensemble LightGBM dan MLP.">
+  <meta name="theme-color" content="#eef2f9">
   <title>Beranda · Sakit-Learn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="static/css/common.css" rel="stylesheet">
-  <link href="static/css/beranda.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/beranda.css') }}" rel="stylesheet">
 </head>
 <body data-page="beranda">
   <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
-
   <div id="site-navbar"></div>
 
-  <main id="main">
-<section class="hero">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6">
-        <h1 class="hero-title">Cek status berat badan Anda dalam semenit.</h1>
-        <p class="lead-soft mb-4">
-          Isi usia, tinggi, berat, dan tingkat aktivitas. Sakit-Learn menghitung peluang untuk empat kategori
-          dan menunjukkan seberapa yakin modelnya.
-        </p>
-        <div class="d-flex flex-wrap gap-2">
-          <a class="btn btn-primary btn-lg" href="klasifikasi.html"><i class="bi bi-play-circle-fill me-1"></i> Mulai klasifikasi</a>
-          <a class="btn btn-outline-secondary btn-lg" href="#cara-kerja">Lihat cara kerjanya</a>
+  <main class="container pb-5" id="main">
+
+    <!-- HERO -->
+    <section class="hero glass" aria-labelledby="heroTitle">
+      <div class="row align-items-center g-4 g-lg-5">
+        <div class="col-lg-7">
+          <div class="hero-badge">
+            <b>Model</b>
+            <span>Menggunakan ensemble LightGBM + MLP</span>
+          </div>
+          <h1 class="hero-title" id="heroTitle">Klasifikasi Status Berat Badan Menggunakan <span class="accent">Ensemble Learning</span></h1>
+          <p class="hero-lead">
+            <b>Sakit-Learn</b> menggunakan ensemble <b>LightGBM + Multi-Layer Perceptron (MLP)</b> untuk mengklasifikasikan
+            status berat badan Anda ke dalam 4 kategori dengan probabilitas masing-masing — <b>transparan dan akurat</b>.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a class="btn btn-sl btn-lg px-4" href="{{ url_for('klasifikasi') }}"><i class="bi bi-play-circle-fill me-1"></i> Mulai Klasifikasi</a>
+            <a class="btn btn-link" href="{{ url_for('tentang') }}"><i class="bi bi-info-circle me-1"></i> Pelajari Model</a>
+          </div>
         </div>
-        
-        <p class="small text-body-secondary mt-3 mb-0" data-guest-only>Belum punya akun? <a href="daftar.html">Daftar gratis</a> untuk menyimpan riwayat Anda.</p>
-        
+
+        <!-- Contoh hasil interaktif: berganti otomatis, bisa dipilih manual -->
+        <div class="col-lg-5">
+          <div class="pred glass glass-spot" id="pred" aria-label="Contoh tampilan hasil klasifikasi">
+            <div class="pred-top">
+              <span class="pred-tag"><i class="bi bi-stars"></i> Contoh hasil</span>
+              <span class="small text-muted">BMI <b id="pdBmi" class="text-dark">22.4</b></span>
+            </div>
+            <div class="pred-main">
+              <div class="pred-ring" role="img" aria-label="Tingkat keyakinan contoh">
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" class="trk"/>
+                  <circle cx="50" cy="50" r="42" class="bar" id="pdRing" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+                </svg>
+                <div class="val"><span><span id="pdConf">85</span>%</span><small>keyakinan</small></div>
+              </div>
+              <div>
+                <div class="small text-muted">Kategori terpilih</div>
+                <div class="pred-name" id="pdName">Normal weight</div>
+              </div>
+            </div>
+            <div class="pred-bars" id="pdBars" aria-live="polite"></div>
+            <div class="pred-tabs" id="pdTabs" role="group" aria-label="Pilih contoh kategori"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="col-lg-6">
-        <div class="card-sl quick-bmi p-4">
-          <h2 class="h5 mb-1">Hitung BMI cepat</h2>
-          <p class="small text-body-secondary mb-4">Geser untuk melihat posisi BMI Anda pada skala.</p>
+      <div class="hero-stats" id="heroStats">
+        <div class="item"><div class="val" id="hsAcc" data-count="95" data-suffix="%">95%</div><div class="lbl">Akurasi Model</div></div>
+        <div class="item"><div class="val" data-count="4">4</div><div class="lbl">Kategori Output</div></div>
+        <div class="item"><div class="val" data-count="2">2</div><div class="lbl">Model Ensemble</div></div>
+        <div class="item"><div class="val" id="hsN" data-count="2111">2,111</div><div class="lbl">Data Latih</div></div>
+      </div>
+    </section>
 
-          <div class="mb-3">
-            <div class="d-flex justify-content-between"><label for="qHeight" class="form-label mb-1">Tinggi badan</label><output id="qHeightOut" class="fw-bold">165 cm</output></div>
-            <input type="range" class="form-range" id="qHeight" min="120" max="220" value="165">
+    <!-- HITUNG BMI CEPAT -->
+    <section class="sl-card mt-4" aria-labelledby="quickTitle">
+      <div class="sl-card-head" id="quickTitle"><i class="bi bi-calculator-fill"></i> Hitung BMI Cepat</div>
+      <div class="sl-card-body">
+        <div class="row g-4 align-items-center">
+          <div class="col-md-7">
+            <p class="text-muted small mb-4">Geser untuk melihat posisi BMI Anda pada skala. Ini hanya hitungan awal sebelum klasifikasi lengkap.</p>
+            <div class="mb-4">
+              <div class="d-flex justify-content-between"><label for="qHeight" class="form-label mb-1">Tinggi badan</label><output id="qHeightOut" class="fw-bold">165 cm</output></div>
+              <input type="range" class="form-range" id="qHeight" min="120" max="220" value="165">
+            </div>
+            <div>
+              <div class="d-flex justify-content-between"><label for="qWeight" class="form-label mb-1">Berat badan</label><output id="qWeightOut" class="fw-bold">60 kg</output></div>
+              <input type="range" class="form-range" id="qWeight" min="30" max="150" value="60">
+            </div>
           </div>
-          <div class="mb-4">
-            <div class="d-flex justify-content-between"><label for="qWeight" class="form-label mb-1">Berat badan</label><output id="qWeightOut" class="fw-bold">60 kg</output></div>
-            <input type="range" class="form-range" id="qWeight" min="30" max="150" value="60">
+          <div class="col-md-5">
+            <div class="quick-result" aria-live="polite">
+              <div class="small text-muted">BMI Anda</div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="bmi-value" id="qBmi">22.0</span>
+                <span class="cat-pill cat-normal" id="qBadge">Normal weight</span>
+              </div>
+              <div data-spectrum="q"></div>
+              <a id="qGo" class="btn btn-sl w-100 mt-3" href="{{ url_for('klasifikasi') }}">Lanjutkan dengan data ini</a>
+            </div>
           </div>
-
-          <div class="d-flex align-items-end justify-content-between mb-3" aria-live="polite">
-            <div><div class="small text-body-secondary">BMI Anda</div><div class="bmi-value" id="qBmi">22,0</div></div>
-            <span class="cat-badge cat-normal" id="qBadge"><span class="cat-dot"></span><span id="qLabel">Normal weight</span></span>
-          </div>
-          
-<div data-spectrum="q"></div>
-
-          <hr class="my-3">
-          <p class="small text-body-secondary mb-3">Ini hanya hitungan BMI sederhana. Hasil dari model ensemble ada di halaman Klasifikasi.</p>
-          <a id="qGo" class="btn btn-primary w-100" href="klasifikasi.html">Lanjutkan dengan data ini</a>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="section" id="evaluasi">
-  <div class="container">
-    <h2 class="section-title">Seberapa akurat modelnya?</h2>
-    <p class="lead-soft mb-4">Hasil evaluasi ensemble LightGBM + MLP pada data uji, dengan rentang tingkat kepercayaan 95%.</p>
+    <!-- HASIL EVALUASI MODEL -->
+    <h2 class="section-title"><i class="bi bi-bar-chart-line-fill"></i> Hasil Evaluasi Model</h2>
+    <section class="sl-card" id="evaluasi">
+      <div class="sl-card-head"><i class="bi bi-clipboard-check-fill"></i> Performa Ensemble LightGBM + MLP</div>
+      <div class="sl-card-body">
+        <p class="text-muted mb-3">Model ensemble diuji pada dataset. Berikut hasil evaluasi dengan rentang <b>tingkat kepercayaan 95%</b>:</p>
 
-    <div id="evalLoading" class="row g-3">
-      <div class="col-6 col-lg-3"><div class="skeleton" style="height:110px"></div></div><div class="col-6 col-lg-3"><div class="skeleton" style="height:110px"></div></div><div class="col-6 col-lg-3"><div class="skeleton" style="height:110px"></div></div><div class="col-6 col-lg-3"><div class="skeleton" style="height:110px"></div></div>
-    </div>
-    <div id="evalError" class="alert alert-warning d-none align-items-center justify-content-between" role="alert">
-      <span>Data evaluasi belum bisa dimuat.</span>
-      <button class="btn btn-sm btn-outline-secondary" id="evalRetry" type="button">Coba lagi</button>
-    </div>
-
-    <div id="evalContent" hidden>
-      <div class="row g-3 mb-4" id="evalStats"></div>
-      <div class="card-sl p-3 p-md-4">
-        <h3 class="h6 mb-3">Evaluasi per kategori</h3>
-        <div class="table-responsive">
-          <table class="table align-middle mb-0">
-            <thead><tr><th>Kategori</th><th>Precision</th><th>Recall</th><th>F1-score</th><th>Kepercayaan 95%</th></tr></thead>
-            <tbody id="evalRows"></tbody>
-          </table>
+        <div id="evalLoading" class="row g-3 mb-3">
+          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
+          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
+          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
+          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
         </div>
-        <div class="weights mt-4" id="evalWeights"></div>
-      </div>
-    </div>
-  </div>
-</section>
+        <div id="evalError" class="alert alert-warning d-none align-items-center justify-content-between" role="alert">
+          <span>Data evaluasi belum bisa dimuat.</span>
+          <button class="btn btn-sm btn-outline-secondary" id="evalRetry" type="button">Coba lagi</button>
+        </div>
 
-<section class="section pt-0" id="cara-kerja">
-  <div class="container">
-    <h2 class="section-title">Cara kerja</h2>
-    <p class="lead-soft mb-4">Tiga langkah dari data Anda sampai hasil.</p>
-    <ol class="steps row g-3 list-unstyled">
-      <li class="col-md-4"><div class="card-sl p-4 h-100"><span class="step-num">1</span><h3 class="h6">Masukkan data</h3><p class="mb-0 text-body-secondary small">Isi usia, gender, tinggi, berat, dan tingkat aktivitas fisik Anda.</p></div></li>
-      <li class="col-md-4"><div class="card-sl p-4 h-100"><span class="step-num">2</span><h3 class="h6">Dua model menghitung</h3><p class="mb-0 text-body-secondary small">LightGBM dan MLP memproses data secara terpisah, lalu hasilnya digabung dengan bobot 0,5 : 0,5.</p></div></li>
-      <li class="col-md-4"><div class="card-sl p-4 h-100"><span class="step-num">3</span><h3 class="h6">Baca hasilnya</h3><p class="mb-0 text-body-secondary small">Anda mendapat kategori terpilih, probabilitas keempat kategori, dan tingkat keyakinan model.</p></div></li>
-    </ol>
-  </div>
-</section>
-</main>
+        <div id="evalContent" hidden>
+          <div class="row g-3 mb-4" id="evalStats"></div>
+          <h3 class="h6 fw-bold mb-3"><i class="bi bi-table text-primary"></i> Evaluasi per Kategori (Confidence 95%)</h3>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead><tr><th>Kategori</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Confidence 95%</th></tr></thead>
+              <tbody id="evalRows"></tbody>
+            </table>
+          </div>
+          <div class="model-info mt-4">
+            <div class="model-name"><i class="bi bi-cpu-fill"></i> Ensemble Model Architecture</div>
+            <p class="small text-muted mb-2 mt-1">Hasil prediksi diperoleh dari <b>weighted average</b> dua model machine learning:</p>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="weight-badge"><i class="bi bi-lightning-charge-fill"></i> LightGBM × <span id="wLgbm">0.5</span></span>
+              <span class="weight-badge"><i class="bi bi-diagram-3-fill"></i> MLP × <span id="wMlp">0.5</span></span>
+              <span class="weight-badge is-ok"><i class="bi bi-check-circle-fill"></i> Weighted Average</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARA KERJA -->
+    <h2 class="section-title" id="cara-kerja"><i class="bi bi-diagram-3-fill"></i> Cara Kerja Sistem</h2>
+    <div class="row g-3">
+      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">1</div><h3 class="h6">Masukkan Data</h3><p>Isi usia, gender, tinggi, berat, dan tingkat aktivitas fisik Anda pada form.</p></div></div>
+      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">2</div><h3 class="h6">Proses Ensemble</h3><p>LightGBM dan MLP memproses data secara paralel, lalu hasilnya digabung (0.5 × 0.5).</p></div></div>
+      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">3</div><h3 class="h6">Lihat Hasil</h3><p>Dapatkan 4 probabilitas output + kategori terpilih + tingkat kepercayaan.</p></div></div>
+    </div>
+  </main>
 
   <div id="site-footer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/mock-api.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/beranda.js"></script>
+  <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/beranda.js') }}"></script>
 </body>
 </html>

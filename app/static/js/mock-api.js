@@ -24,8 +24,8 @@
   const WEIGHTS = { lightgbm: 0.5, mlp: 0.5 };
   const CATEGORIES = {
     under: { key: "under", name: "Underweight", label: "Kurus (Underweight)" },
-    normal: { key: "normal", name: "Normal weight", label: "Berat badan normal" },
-    over: { key: "over", name: "Overweight", label: "Kelebihan berat badan" },
+    normal: { key: "normal", name: "Normal weight", label: "Berat Badan Normal" },
+    over: { key: "over", name: "Overweight", label: "Kelebihan Berat Badan" },
     obese: { key: "obese", name: "Obese", label: "Obesitas" },
   };
   const RECOMMENDATIONS = {

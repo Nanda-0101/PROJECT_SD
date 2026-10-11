@@ -1,5 +1,12 @@
-/* Halaman Masuk (juga dipakai pola yang sama oleh Daftar) */
-.auth-wrap { display: grid; place-items: center; padding: 3rem 1rem; min-height: calc(100vh - 200px); }
-.auth-card { width: 100%; max-width: 440px; box-shadow: 0 10px 40px rgba(64, 84, 214, .10); }
-.auth-card .brand-mark { width: 48px; height: 48px; font-size: 1.4rem; border-radius: 14px; display: grid; }
-.demo-box { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--brand-soft); border-radius: var(--radius-md); padding: .8rem 1rem; font-size: .9rem; }
+/* Halaman Login & Sign Up (kartu yang sama dipakai keduanya) */
+.auth-wrap { display: grid; place-items: start center; padding: clamp(1rem, 6vh, 4rem) 0 2rem; }
+.auth-card { width: 100%; max-width: 460px; border-radius: var(--r-xl); padding: clamp(1.5rem, 4vw, 2.2rem); }
+.auth-header { margin-bottom: 1.6rem; }
+.auth-logo { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; font-size: 1.6rem; color: var(--sl-blue); background: rgba(255, 255, 255, .85); box-shadow: inset 0 1px 0 #fff, 0 10px 22px -10px rgba(10, 108, 240, .55); margin-bottom: .9rem; }
+.auth-header h1 { font-weight: 800; font-size: 1.6rem; letter-spacing: -.04em; margin: 0 0 .15rem; }
+.auth-header p { margin: 0; color: var(--sl-muted); font-size: .9rem; }
+.pw-toggle { border-color: rgba(20, 23, 31, .12) !important; background: rgba(255, 255, 255, .82) !important; color: #6b7385 !important; }
+.pw-toggle:hover { color: var(--sl-blue) !important; }
+.demo-box { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; background: var(--sl-blue-soft); border-radius: 16px; padding: .65rem .8rem .65rem 1rem; font-size: .84rem; }
+.auth-switch { text-align: center; margin: 1.3rem 0 0; font-size: .86rem; color: var(--sl-muted); }
+.auth-switch a { font-weight: 700; }

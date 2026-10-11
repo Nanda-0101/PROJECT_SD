@@ -1,13 +1,20 @@
 /* Halaman Riwayat */
-.sum-tile { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem 1.15rem; height: 100%; }
-.sum-tile .lbl { font-size: .8rem; color: var(--ink-soft); margin-bottom: .2rem; }
-.sum-tile .val { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
-.sum-tile .val .cat-badge { font-size: .9rem; }
-.chart-box { position: relative; height: 270px; }
-.chart-box.short { height: 220px; }
+.chart-box { position: relative; height: 260px; display: grid; place-items: center; }
+.chart-box.short { height: 230px; }
+.chart-box canvas { position: absolute; inset: 0; }
+.chart-empty { display: flex; flex-direction: column; align-items: center; gap: .4rem; color: #9aa3b8; font-size: .85rem; }
+.chart-empty[hidden] { display: none; }
+.chart-empty i { font-size: 2.4rem; opacity: .7; }
 #historyBody td { white-space: nowrap; }
-.detail-grid { display: grid; grid-template-columns: auto 1fr; gap: .35rem 1.2rem; margin: 0; }
-.detail-grid dt { color: var(--ink-soft); font-weight: 500; }
+.row-actions { display: inline-flex; gap: .35rem; }
+.row-actions .btn { width: 34px; height: 34px; padding: 0; display: inline-grid; place-items: center; }
+.sum-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--sl-line); }
+.sum-row:last-child { border-bottom: none; }
+.sum-row b { font-variant-numeric: tabular-nums; }
+.detail-grid { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1.3rem; margin: 0; }
+.detail-grid dt { color: var(--sl-muted); font-weight: 500; }
 .detail-grid dd { margin: 0; font-weight: 600; }
-.mini-bar { height: 8px; background: #edf0f7; border-radius: 99px; overflow: hidden; }
-.mini-bar i { display: block; height: 100%; background: var(--cat); border-radius: 99px; }
+.mini-bar { height: 8px; background: rgba(20, 23, 31, .07); border-radius: 4px; overflow: hidden; }
+.mini-bar i { display: block; height: 100%; border-radius: 4px; }
+.confirm-icon { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-size: 1.2rem; color: var(--c-obese); background: rgba(229, 56, 79, .12); margin-bottom: .9rem; }
+.btn-danger { --bs-btn-bg: var(--c-obese); --bs-btn-border-color: var(--c-obese); --bs-btn-hover-bg: #c92a40; --bs-btn-hover-border-color: #c92a40; }

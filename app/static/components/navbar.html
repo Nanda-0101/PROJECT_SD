@@ -1,0 +1,24 @@
+<!-- Navbar bersama. Diisi otomatis oleh js/layout.js ke #site-navbar -->
+<div class="container">
+  <nav class="navbar navbar-expand-lg navbar-custom" aria-label="Navigasi utama">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i> Sakit-Learn</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Buka menu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="/" data-nav="beranda"><i class="bi bi-house-door-fill"></i>Beranda</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="/klasifikasi" data-nav="klasifikasi"><i class="bi bi-graph-up-arrow"></i>Klasifikasi<i class="bi bi-lock-fill lock-icon" title="Perlu login"></i></a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="/riwayat" data-nav="riwayat"><i class="bi bi-clock-history"></i>Riwayat<i class="bi bi-lock-fill lock-icon" title="Perlu login"></i></a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="/tentang" data-nav="tentang"><i class="bi bi-info-circle-fill"></i>About</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0" id="navAuth">
+          <a class="btn btn-outline-primary btn-sm px-3" href="/masuk"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+          <a class="btn btn-sl btn-sm" href="/daftar"><i class="bi bi-person-plus"></i> Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
