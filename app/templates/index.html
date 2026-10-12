@@ -21,8 +21,8 @@
 
     <!-- HERO -->
     <section class="hero glass" aria-labelledby="heroTitle">
-      <div class="row align-items-center g-4 g-lg-5">
-        <div class="col-lg-7">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
           <div class="hero-badge">
             <b>Model</b>
             <span>Menggunakan ensemble LightGBM + MLP</span>
@@ -37,31 +37,6 @@
             <a class="btn btn-link" href="{{ url_for('tentang') }}"><i class="bi bi-info-circle me-1"></i> Pelajari Model</a>
           </div>
         </div>
-
-        <!-- Contoh hasil interaktif: berganti otomatis, bisa dipilih manual -->
-        <div class="col-lg-5">
-          <div class="pred glass glass-spot" id="pred" aria-label="Contoh tampilan hasil klasifikasi">
-            <div class="pred-top">
-              <span class="pred-tag"><i class="bi bi-stars"></i> Contoh hasil</span>
-              <span class="small text-muted">BMI <b id="pdBmi" class="text-dark">22.4</b></span>
-            </div>
-            <div class="pred-main">
-              <div class="pred-ring" role="img" aria-label="Tingkat keyakinan contoh">
-                <svg viewBox="0 0 100 100" aria-hidden="true">
-                  <circle cx="50" cy="50" r="42" class="trk"/>
-                  <circle cx="50" cy="50" r="42" class="bar" id="pdRing" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
-                </svg>
-                <div class="val"><span><span id="pdConf">85</span>%</span><small>keyakinan</small></div>
-              </div>
-              <div>
-                <div class="small text-muted">Kategori terpilih</div>
-                <div class="pred-name" id="pdName">Normal weight</div>
-              </div>
-            </div>
-            <div class="pred-bars" id="pdBars" aria-live="polite"></div>
-            <div class="pred-tabs" id="pdTabs" role="group" aria-label="Pilih contoh kategori"></div>
-          </div>
-        </div>
       </div>
 
       <div class="hero-stats" id="heroStats">
@@ -69,37 +44,6 @@
         <div class="item"><div class="val" data-count="4">4</div><div class="lbl">Kategori Output</div></div>
         <div class="item"><div class="val" data-count="2">2</div><div class="lbl">Model Ensemble</div></div>
         <div class="item"><div class="val" id="hsN" data-count="2111">2,111</div><div class="lbl">Data Latih</div></div>
-      </div>
-    </section>
-
-    <!-- HITUNG BMI CEPAT -->
-    <section class="sl-card mt-4" aria-labelledby="quickTitle">
-      <div class="sl-card-head" id="quickTitle"><i class="bi bi-calculator-fill"></i> Hitung BMI Cepat</div>
-      <div class="sl-card-body">
-        <div class="row g-4 align-items-center">
-          <div class="col-md-7">
-            <p class="text-muted small mb-4">Geser untuk melihat posisi BMI Anda pada skala. Ini hanya hitungan awal sebelum klasifikasi lengkap.</p>
-            <div class="mb-4">
-              <div class="d-flex justify-content-between"><label for="qHeight" class="form-label mb-1">Tinggi badan</label><output id="qHeightOut" class="fw-bold">165 cm</output></div>
-              <input type="range" class="form-range" id="qHeight" min="120" max="220" value="165">
-            </div>
-            <div>
-              <div class="d-flex justify-content-between"><label for="qWeight" class="form-label mb-1">Berat badan</label><output id="qWeightOut" class="fw-bold">60 kg</output></div>
-              <input type="range" class="form-range" id="qWeight" min="30" max="150" value="60">
-            </div>
-          </div>
-          <div class="col-md-5">
-            <div class="quick-result" aria-live="polite">
-              <div class="small text-muted">BMI Anda</div>
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="bmi-value" id="qBmi">22.0</span>
-                <span class="cat-pill cat-normal" id="qBadge">Normal weight</span>
-              </div>
-              <div data-spectrum="q"></div>
-              <a id="qGo" class="btn btn-sl w-100 mt-3" href="{{ url_for('klasifikasi') }}">Lanjutkan dengan data ini</a>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
