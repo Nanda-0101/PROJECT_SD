@@ -21,15 +21,15 @@
       <div class="col-md-3 col-6"><div class="stat-card">
         <div class="stat-icon"><i class="bi bi-${icon}"></i></div>
         <div class="stat-value" data-count="${info.overall[k].value}" data-decimals="1" data-suffix="%">${fmt(info.overall[k].value)}%</div>
-        <div class="stat-label">${label} (±${fmt(info.overall[k].margin)}%)</div>
+        <div class="stat-label">${label}</div>
       </div></div>`).join("");
 
     const rows = info.per_class.map((r) => `
       <tr><td>${catPill(r.key)}</td>
-      <td>${fmt(r.precision)}%</td><td>${fmt(r.recall)}%</td><td>${fmt(r.f1)}%</td><td><b>95.0% ± ${fmt(r.margin)}%</b></td></tr>`);
+      <td>${fmt(r.precision)}%</td><td>${fmt(r.recall)}%</td><td>${fmt(r.f1)}%</td></tr>`);
     const a = info.average;
     rows.push(`<tr class="row-total"><td>Rata-rata</td><td>${fmt(a.precision)}%</td>
-      <td>${fmt(a.recall)}%</td><td>${fmt(a.f1)}%</td><td>95.0% ± ${fmt(a.margin)}%</td></tr>`);
+      <td>${fmt(a.recall)}%</td><td>${fmt(a.f1)}%</td></tr>`);
     document.getElementById("evalRows").innerHTML = rows.join("");
 
     document.getElementById("wLgbm").textContent = fmt(info.weights.lightgbm, 1);

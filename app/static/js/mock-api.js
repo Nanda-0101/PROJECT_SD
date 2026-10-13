@@ -37,18 +37,18 @@
   const LIMITS = { age: [1, 120], height: [50, 250], weight: [10, 300], activity: [1, 4] };
   const OPTIMAL = { age: [18, 79], height: [136, 201], weight: [26, 119], activity: [1, 4] };
   const PER_CLASS = [
-    { key: "under", precision: 94.1, recall: 93.2, f1: 93.6, margin: 1.4 },
-    { key: "normal", precision: 96.8, recall: 96.1, f1: 96.4, margin: 0.9 },
-    { key: "over", precision: 94.6, recall: 94.9, f1: 94.7, margin: 1.2 },
-    { key: "obese", precision: 96.3, recall: 95.8, f1: 96.0, margin: 1.0 },
+    { key: "under", precision: 96, recall: 93, f1: 95, margin: 1.4 },
+    { key: "normal", precision: 93, recall: 93, f1: 93, margin: 0.9 },
+    { key: "over", precision: 89, recall: 93, f1: 91, margin: 1.2 },
+    { key: "obese", precision: 97, recall: 92, f1: 93, margin: 1.0 },
   ];
   const r1 = (n) => Math.round(n * 10) / 10;
 
   function modelInfo() {
     const avg = (m) => r1(PER_CLASS.reduce((s, r) => s + r[m], 0) / PER_CLASS.length);
     return {
-      n_train: 2111, weights: WEIGHTS, optimal_range: OPTIMAL,
-      overall: { accuracy: { value: 95.2, margin: 1.3 }, f1: { value: 94.8, margin: 1.5 }, precision: { value: 95.5, margin: 1.1 }, recall: { value: 94.3, margin: 1.7 } },
+      n_train: 1188, weights: WEIGHTS, optimal_range: OPTIMAL,
+      overall: { accuracy: { value: 93.0, margin: 3.5 }, f1: { value: 93.4, margin: 3.4 }, precision: { value: 94, margin: 3.3 }, recall: { value: 93, margin: 3.5 } },
       per_class: PER_CLASS.map((r) => ({ ...r, name: CATEGORIES[r.key].name })),
       average: { precision: avg("precision"), recall: avg("recall"), f1: avg("f1"), margin: avg("margin") },
     };
