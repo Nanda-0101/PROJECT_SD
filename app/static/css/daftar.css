@@ -1,7 +1,84 @@
-/* Halaman Sign Up: meter kekuatan password */
-.strength { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-.strength span { height: 5px; border-radius: 4px; background: rgba(20, 23, 31, .09); transition: background .25s; }
-.strength[data-level="1"] span:nth-child(-n+1) { background: var(--c-obese); }
-.strength[data-level="2"] span:nth-child(-n+2) { background: var(--c-over); }
-.strength[data-level="3"] span:nth-child(-n+3) { background: #7cb342; }
-.strength[data-level="4"] span:nth-child(-n+4) { background: var(--c-normal); }
+/* ==========================================================================
+   Halaman Daftar: meter kekuatan password
+   daftar.js mengisi atribut data-level (1-4) pada elemen .strength,
+   lalu CSS di bawah mewarnai kotak sebanyak level tersebut.
+   ========================================================================== */
+
+.strength {
+  --c-good: #7cb342; /* warna level 3 ("Baik"); level lain memakai warna dari common.css */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 kotak sama lebar */
+  gap: 5px;
+}
+
+/* Keadaan awal: semua kotak abu-abu */
+.strength span {
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(20, 23, 31, 0.09);
+  transition: background 0.25s; /* perubahan warna halus */
+}
+
+/* :nth-child(-n+N) = mewarnai kotak ke-1 sampai ke-N */
+.strength[data-level="1"] span:nth-child(-n + 1) {
+  background: var(--c-obese);
+} /* Lemah  = merah   */
+.strength[data-level="2"] span:nth-child(-n + 2) {
+  background: var(--c-over);
+} /* Cukup  = oranye  */
+.strength[data-level="3"] span:nth-child(-n + 3) {
+  background: var(--c-good);
+} /* Baik   = hijau muda */
+.strength[data-level="4"] span:nth-child(-n + 4) {
+  background: var(--c-normal);
+} /* Kuat   = hijau   */
+
+/* ---------- Bar kemajuan form ---------- */
+
+.form-progress {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(20, 23, 31, 0.08);
+}
+
+.form-progress span {
+  display: block;
+  width: 0; /* lebar diisi JS */
+  height: 100%;
+  border-radius: 99px;
+  background: var(--sl-blue);
+  transition: width 0.4s;
+}
+
+/* ---------- Daftar syarat password ---------- */
+
+.pw-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* dua kolom */
+  gap: 0.25rem 0.8rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  font-size: 0.78rem;
+  list-style: none;
+  color: var(--sl-muted);
+}
+
+.pw-rules li {
+  transition: color 0.25s;
+}
+
+/* syarat yang sudah terpenuhi berubah hijau */
+.pw-rules li.ok {
+  color: var(--c-normal);
+  font-weight: 600;
+}
+
+/* Hormati pengguna yang mematikan animasi di pengaturan perangkatnya */
+@media (prefers-reduced-motion: reduce) {
+  .strength span,
+  .form-progress span,
+  .pw-rules li {
+    transition: none;
+  }
+}

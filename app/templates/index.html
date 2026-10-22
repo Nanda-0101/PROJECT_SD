@@ -1,108 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- Template Flask: kode dalam tanda kurung kurawal ganda diisi server (Jinja2), bukan HTML biasa -->
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#eef2f9">
-  <title>Beranda · Sakit-Learn</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/beranda.css') }}" rel="stylesheet">
-</head>
-<body data-page="beranda">
-  <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
-  <div id="site-navbar"></div>
+  <!-- lang="id": pembaca layar & Google tahu halaman berbahasa Indonesia -->
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Encoding teks; wajib agar karakter seperti "·" dan "×" tampil benar -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Responsif di HP: lebar layar = lebar halaman -->
+    <meta name="theme-color" content="#eef2f9" />
+    <!-- Warna bar browser di HP -->
+    <meta
+      name="description"
+      content="Sakit-Learn mengklasifikasikan status berat badan dengan ensemble LightGBM dan MLP."
+    />
+    <!-- Ringkasan untuk mesin pencari -->
+    <title>Beranda · Sakit-Learn</title>
+    <!-- Judul tab browser -->
 
-  <main class="container pb-5" id="main">
+    <!-- Font: preconnect = buka koneksi lebih awal supaya font cepat tampil -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-    <!-- HERO -->
-    <section class="hero glass" aria-labelledby="heroTitle">
-      <div class="row align-items-center">
-        <div class="col-lg-8">
-          <div class="hero-badge">
-            <b>Model</b>
-            <span>Menggunakan ensemble LightGBM + MLP</span>
-          </div>
-          <h1 class="hero-title" id="heroTitle">Klasifikasi Status Berat Badan Menggunakan <span class="accent">Ensemble Learning</span></h1>
-          <p class="hero-lead">
-            <b>Sakit-Learn</b> menggunakan ensemble <b>LightGBM + Multi-Layer Perceptron (MLP)</b> untuk mengklasifikasikan
-            status berat badan Anda ke dalam 4 kategori dengan probabilitas masing-masing — <b>transparan dan akurat</b>.
-          </p>
-          <div class="d-flex flex-wrap align-items-center gap-3">
-            <a class="btn btn-sl btn-lg px-4" href="{{ url_for('klasifikasi') }}"><i class="bi bi-play-circle-fill me-1"></i> Mulai Klasifikasi</a>
-            <a class="btn btn-link" href="{{ url_for('tentang') }}"><i class="bi bi-info-circle me-1"></i> Pelajari Model</a>
-          </div>
-        </div>
-      </div>
+    <!-- Pustaka pihak ketiga (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 
-      <div class="hero-stats" id="heroStats">
-        <div class="item"><div class="val" id="hsAcc" data-count="95" data-suffix="%">95%</div><div class="lbl">Akurasi Model</div></div>
-        <div class="item"><div class="val" data-count="4">4</div><div class="lbl">Kategori Output</div></div>
-        <div class="item"><div class="val" data-count="2">2</div><div class="lbl">Model Ensemble</div></div>
-        <div class="item"><div class="val" id="hsN" data-count="2111">2,111</div><div class="lbl">Data Latih</div></div>
-      </div>
-    </section>
+    <!-- CSS milik proyek: common = gaya bersama semua halaman, beranda = khusus halaman ini -->
+    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/beranda.css') }}" rel="stylesheet" />
+    <!-- Poles tampilan bersama, dimuat paling akhir supaya tidak tertimpa -->
+    <link href="{{ url_for('static', filename='css/efek.css') }}" rel="stylesheet" />
+  </head>
 
-    <!-- HASIL EVALUASI MODEL -->
-    <h2 class="section-title"><i class="bi bi-bar-chart-line-fill"></i> Hasil Evaluasi Model</h2>
-    <section class="sl-card" id="evaluasi">
-      <div class="sl-card-head"><i class="bi bi-clipboard-check-fill"></i> Performa Ensemble LightGBM + MLP</div>
-      <div class="sl-card-body">
-        <p class="text-muted mb-3">Model ensemble diuji pada dataset. Berikut hasil evaluasi dengan rentang <b>tingkat kepercayaan 95%</b>:</p>
+  <!-- data-page dipakai layout.js untuk menandai menu navbar yang aktif -->
+  <body data-page="beranda">
+    <!-- Tautan "lewati" untuk pengguna keyboard/pembaca layar; hanya terlihat saat di-Tab -->
+    <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
 
-        <div id="evalLoading" class="row g-3 mb-3">
-          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
-          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
-          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
-          <div class="col-md-3 col-6"><div class="skeleton" style="height:132px"></div></div>
-        </div>
-        <div id="evalError" class="alert alert-warning d-none align-items-center justify-content-between" role="alert">
-          <span>Data evaluasi belum bisa dimuat.</span>
-          <button class="btn btn-sm btn-outline-secondary" id="evalRetry" type="button">Coba lagi</button>
-        </div>
+    <!-- Navbar disuntikkan oleh layout.js ke elemen ini -->
+    <div id="site-navbar"></div>
 
-        <div id="evalContent" hidden>
-          <div class="row g-3 mb-4" id="evalStats"></div>
-          <h3 class="h6 fw-bold mb-3"><i class="bi bi-table text-primary"></i> Evaluasi per Kategori</h3>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead><tr><th>Kategori</th><th>Precision</th><th>Recall</th><th>F1-Score</th></tr></thead>
-              <tbody id="evalRows"></tbody>
-            </table>
-          </div>
-          <div class="model-info mt-4">
-            <div class="model-name"><i class="bi bi-cpu-fill"></i> Ensemble Model Architecture</div>
-            <p class="small text-muted mb-2 mt-1">Hasil prediksi diperoleh dari <b>weighted average</b> dua model machine learning:</p>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="weight-badge"><i class="bi bi-lightning-charge-fill"></i> LightGBM × <span id="wLgbm">0.5</span></span>
-              <span class="weight-badge"><i class="bi bi-diagram-3-fill"></i> MLP × <span id="wMlp">0.5</span></span>
-              <span class="weight-badge is-ok"><i class="bi bi-check-circle-fill"></i> Weighted Average</span>
+    <main class="container pb-5" id="main">
+      <!-- ===== HERO: bagian pembuka halaman ===== -->
+      <section class="hero glass" aria-labelledby="heroTitle">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <!-- Lencana kecil di atas judul -->
+            <div class="hero-badge">
+              <b>Model</b>
+              <span>Menggunakan ensemble LightGBM + MLP</span>
+            </div>
+
+            <h1 class="hero-title" id="heroTitle">
+              Klasifikasi Status Berat Badan Menggunakan <span class="accent">Ensemble Learning</span>
+            </h1>
+
+            <p class="hero-lead">
+              <b>Sakit-Learn</b> menggunakan ensemble <b>LightGBM + Multi-Layer Perceptron (MLP)</b> untuk
+              mengklasifikasikan status berat badan Anda ke dalam 4 kategori dengan probabilitas masing-masing —
+              <b>transparan dan akurat</b>.
+            </p>
+
+            <!-- Tombol aksi: url_for('klasifikasi') = alamat route Flask bernama "klasifikasi" -->
+            <div class="d-flex flex-wrap align-items-center gap-3">
+              <a class="btn btn-sl btn-lg px-4" href="{{ url_for('klasifikasi') }}">
+                <i class="bi bi-play-circle-fill me-1" aria-hidden="true"></i> Mulai Klasifikasi
+              </a>
+              <a class="btn btn-link" href="{{ url_for('tentang') }}">
+                <i class="bi bi-info-circle me-1" aria-hidden="true"></i> Pelajari Model
+              </a>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- CARA KERJA -->
-    <h2 class="section-title" id="cara-kerja"><i class="bi bi-diagram-3-fill"></i> Cara Kerja Sistem</h2>
-    <div class="row g-3">
-      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">1</div><h3 class="h6">Masukkan Data</h3><p>Isi usia, gender, tinggi, berat, dan tingkat aktivitas fisik Anda pada form.</p></div></div>
-      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">2</div><h3 class="h6">Proses Ensemble</h3><p>LightGBM dan MLP memproses data secara paralel, lalu hasilnya digabung (0.5 × 0.5).</p></div></div>
-      <div class="col-md-4"><div class="step-card glass glass-spot"><div class="step-num">3</div><h3 class="h6">Lihat Hasil</h3><p>Dapatkan 4 probabilitas output + kategori terpilih + tingkat kepercayaan.</p></div></div>
-    </div>
-  </main>
+        <!--
+          Angka ringkas. data-count = angka tujuan animasi hitung-naik (common.js),
+          data-suffix = tambahan di belakang angka. Teks di dalam div adalah nilai awal
+          (cadangan) kalau data dari server belum/ tidak berhasil dimuat; beranda.js menimpanya.
+        -->
+        <div class="hero-stats" id="heroStats">
+          <div class="item">
+            <div class="val" id="hsAcc" data-count="95" data-suffix="%">95%</div>
+            <div class="lbl">Akurasi Model</div>
+          </div>
+          <div class="item">
+            <div class="val" data-count="4">4</div>
+            <div class="lbl">Kategori Output</div>
+          </div>
+          <div class="item">
+            <div class="val" data-count="2">2</div>
+            <div class="lbl">Model Ensemble</div>
+          </div>
+          <div class="item">
+            <div class="val" id="hsN" data-count="2111">2,111</div>
+            <div class="lbl">Data Latih</div>
+          </div>
+        </div>
+      </section>
 
-  <div id="site-footer"></div>
+      <!-- ===== HASIL EVALUASI MODEL: diisi dinamis oleh beranda.js ===== -->
+      <h2 class="section-title reveal"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i> Hasil Evaluasi Model</h2>
+      <section class="sl-card reveal" id="evaluasi">
+        <div class="sl-card-head">
+          <i class="bi bi-clipboard-check-fill" aria-hidden="true"></i> Performa Ensemble LightGBM + MLP
+        </div>
+        <div class="sl-card-body">
+          <p class="text-muted mb-3">
+            Model ensemble diuji pada dataset. Berikut hasil evaluasi dengan rentang <b>tingkat kepercayaan 95%</b>:
+          </p>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/beranda.js') }}"></script>
-</body>
+          <!-- KEADAAN 1 — memuat: 4 kotak abu berkedip (skeleton), tingginya diatur di beranda.css -->
+          <div id="evalLoading" class="row g-3 mb-3" aria-hidden="true">
+            <div class="col-md-3 col-6"><div class="skeleton skeleton-stat"></div></div>
+            <div class="col-md-3 col-6"><div class="skeleton skeleton-stat"></div></div>
+            <div class="col-md-3 col-6"><div class="skeleton skeleton-stat"></div></div>
+            <div class="col-md-3 col-6"><div class="skeleton skeleton-stat"></div></div>
+          </div>
+
+          <!--
+            KEADAAN 2 — gagal: kotak peringatan + tombol "Coba lagi".
+            d-flex d-none: di Bootstrap, d-none ditulis SETELAH d-flex sehingga menang (tersembunyi).
+            Cukup hapus kelas d-none lewat JS untuk menampilkannya sebagai flex.
+          -->
+          <div
+            id="evalError"
+            class="alert alert-warning d-flex d-none align-items-center justify-content-between"
+            role="alert"
+          >
+            <span>Data evaluasi belum bisa dimuat.</span>
+            <button class="btn btn-sm btn-outline-secondary" id="evalRetry" type="button">Coba lagi</button>
+          </div>
+
+          <!-- KEADAAN 3 — berhasil: atribut hidden menyembunyikan sampai data siap -->
+          <div id="evalContent" hidden>
+            <!-- 4 kartu angka (Akurasi, F1, Precision, Recall) dibuat oleh JS -->
+            <div class="row g-3 mb-4" id="evalStats"></div>
+
+            <h3 class="h6 fw-bold mb-3">
+              <i class="bi bi-table text-primary" aria-hidden="true"></i> Evaluasi per Kategori
+            </h3>
+            <div class="table-responsive">
+              <!-- tabel bisa digeser menyamping di layar kecil -->
+              <table class="table table-hover align-middle mb-0">
+                <caption class="visually-hidden">
+                  Precision, recall, dan F1-score untuk setiap kategori berat badan
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Kategori</th>
+                    <th scope="col">Precision</th>
+                    <th scope="col">Recall</th>
+                    <th scope="col">F1-Score</th>
+                  </tr>
+                </thead>
+                <tbody id="evalRows"></tbody>
+                <!-- baris diisi oleh JS -->
+              </table>
+            </div>
+
+            <!-- Penjelasan arsitektur; bobot 0.5/0.5 ditimpa JS dengan nilai asli dari server -->
+            <div class="model-info mt-4">
+              <div class="model-name">
+                <i class="bi bi-cpu-fill" aria-hidden="true"></i> Ensemble Model Architecture
+              </div>
+              <p class="small text-muted mb-2 mt-1">
+                Hasil prediksi diperoleh dari <b>weighted average</b> dua model machine learning:
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="weight-badge"
+                  ><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> LightGBM ×
+                  <span id="wLgbm">0.5</span></span
+                >
+                <span class="weight-badge"
+                  ><i class="bi bi-diagram-3-fill" aria-hidden="true"></i> MLP × <span id="wMlp">0.5</span></span
+                >
+                <span class="weight-badge is-ok"
+                  ><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Weighted Average</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CARA KERJA: 3 langkah berurutan, maka memakai <ol> (daftar bernomor) ===== -->
+      <h2 class="section-title" id="cara-kerja">
+        <i class="bi bi-diagram-3-fill" aria-hidden="true"></i> Cara Kerja Sistem
+      </h2>
+      <ol class="row g-3 list-unstyled">
+        <!-- list-unstyled: hilangkan angka bawaan <ol>, nomor sudah ada di lingkaran -->
+        <li class="col-md-4">
+          <div class="step-card glass glass-spot">
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3 class="h6">Masukkan Data</h3>
+            <p>Isi usia, gender, tinggi, berat, dan tingkat aktivitas fisik Anda pada form.</p>
+          </div>
+        </li>
+        <li class="col-md-4">
+          <div class="step-card glass glass-spot">
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3 class="h6">Proses Ensemble</h3>
+            <p>LightGBM dan MLP memproses data secara paralel, lalu hasilnya digabung dengan rata-rata berbobot.</p>
+          </div>
+        </li>
+        <li class="col-md-4">
+          <div class="step-card glass glass-spot">
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3 class="h6">Lihat Hasil</h3>
+            <p>Dapatkan 4 probabilitas output + kategori terpilih + tingkat kepercayaan.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- ===== KALKULATOR BMI CEPAT, dihitung langsung di browser tanpa kirim data ke server ===== -->
+      <h2 class="section-title reveal"><i class="bi bi-calculator-fill" aria-hidden="true"></i> Cek BMI Cepat</h2>
+      <section class="calc glass reveal" aria-label="Kalkulator BMI">
+        <div class="row g-4 align-items-center">
+          <!-- Kiri berisi dua kolom isian -->
+          <div class="col-lg-5">
+            <label class="form-label fw-semibold" for="qTinggi">Tinggi badan (cm)</label>
+            <input class="form-control mb-3" id="qTinggi" type="number" inputmode="decimal" min="100" max="250" placeholder="contoh 165" />
+            <label class="form-label fw-semibold" for="qBerat">Berat badan (kg)</label>
+            <input class="form-control" id="qBerat" type="number" inputmode="decimal" min="20" max="300" placeholder="contoh 60" />
+          </div>
+          <!-- Kanan berisi hasil yang berubah tiap angka diketik -->
+          <div class="col-lg-7" aria-live="polite">
+            <div class="calc-empty" id="qEmpty">Isi tinggi dan berat badan, hasilnya muncul di sini.</div>
+            <div id="qResult" hidden>
+              <div class="d-flex align-items-baseline gap-3 mb-2">
+                <span class="calc-bmi" id="qBmi">0</span>
+                <b id="qCat"></b>
+              </div>
+              <!-- Skala BMI, penanda bergeser sesuai hasil -->
+              <div class="gauge"><i></i><i></i><i></i><i></i><span class="gauge-pin" id="qPin"></span></div>
+              <p class="small text-muted mt-3 mb-2" id="qIdeal"></p>
+              <button class="btn btn-sm btn-outline-primary" id="qLearn" type="button">Lihat penjelasan dan tips</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== KATEGORI: 4 kartu yang bisa diklik, isi penjelasannya muncul di panel bawahnya ===== -->
+      <h2 class="section-title reveal"><i class="bi bi-grid-fill" aria-hidden="true"></i> Empat Kategori Hasil</h2>
+      <section class="reveal" aria-label="Penjelasan kategori">
+        <!-- tombol dibuat beranda.js dari daftar CATEGORY_INFO -->
+        <div class="row g-3 mb-3" id="catTabs" role="tablist"></div>
+        <!-- panel penjelasan, isinya berganti setiap kartu diklik -->
+        <div class="cat-panel glass" id="catPanel" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <!-- Footer disuntikkan oleh layout.js -->
+    <div id="site-footer"></div>
+
+    <!-- URUTAN SKRIP PENTING: yang dipakai harus dimuat lebih dulu (config → mock-api → layout → common → halaman) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/beranda.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
+  </body>
 </html>

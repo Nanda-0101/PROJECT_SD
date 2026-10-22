@@ -1,60 +1,526 @@
-/* Halaman Beranda */
-.hero { padding: clamp(1.5rem, 4vw, 3rem); border-radius: var(--r-xl); margin-top: .5rem; position: relative; overflow: hidden; }
-.hero::before { /* semburat biru di pojok kanan atas, seperti mockup */
-  content: ""; position: absolute; width: 420px; height: 420px; right: -120px; top: -140px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(10, 108, 240, .28), transparent 68%); pointer-events: none;
+/* ==========================================================================
+   Halaman Beranda
+   Variabel seperti --sl-ink, --r-xl, --c-normal berasal dari common.css.
+   ========================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(0.3, 0.7, 0.2, 1); /* kurva animasi yang dipakai berulang */
 }
-.hero > * { position: relative; }
-.hero-badge { display: inline-flex; flex-direction: column; gap: .05rem; padding: .55rem 1.1rem; border-radius: 18px; background: rgba(255, 255, 255, .85); border: 1px solid var(--glass-edge); box-shadow: inset 0 1px 0 #fff, 0 8px 20px -12px rgba(30, 50, 100, .35); margin-bottom: 1.4rem; }
-.hero-badge b { font-size: .85rem; color: var(--sl-ink); }
-.hero-badge span { font-size: .74rem; color: var(--sl-muted); }
-.hero-title { font-weight: 800; font-size: clamp(2.1rem, 5.2vw, 3.6rem); line-height: 1.06; letter-spacing: -.045em; margin-bottom: 1.2rem; }
-.hero-title .accent { color: var(--sl-blue); }
-.hero-lead { color: #4a5163; font-size: 1.02rem; line-height: 1.7; max-width: 38rem; margin-bottom: 1.8rem; }
-.hero-lead b { color: var(--sl-ink); font-weight: 600; }
 
-.hero-stats { display: flex; flex-wrap: wrap; margin-top: 2.2rem; padding-top: 1.5rem; border-top: 1px solid var(--sl-line); }
-.hero-stats .item { padding: 0 1.8rem; border-left: 1px solid var(--sl-line); }
-.hero-stats .item:first-child { padding-left: 0; border-left: 0; }
-.hero-stats .val { font-size: 1.6rem; font-weight: 800; letter-spacing: -.03em; color: var(--sl-ink); font-variant-numeric: tabular-nums; }
-.hero-stats .lbl { font-size: .76rem; color: var(--sl-muted); }
+/* ---------- HERO ---------- */
 
-/* ===== Widget contoh hasil ===== */
-.pred { padding: 1.2rem 1.3rem 1.1rem; border-radius: var(--r-lg); background: rgba(255, 255, 255, .66); }
-.pred-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.pred-tag { display: inline-flex; align-items: center; gap: .35rem; font-size: .74rem; font-weight: 700; color: var(--sl-blue); background: var(--sl-blue-soft); border-radius: 999px; padding: .25rem .7rem; }
-.pred-main { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 1.1rem; }
-.pred-ring { position: relative; width: 92px; height: 92px; flex: none; }
-.pred-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.pred-ring circle { fill: none; stroke-width: 9; }
-.pred-ring .trk { stroke: rgba(20, 23, 31, .08); }
-.pred-ring .bar { stroke: var(--cat, var(--c-normal)); stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.3, .7, .2, 1), stroke .4s; }
-.pred-ring .val { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; color: var(--sl-ink); line-height: 1; }
-.pred-ring .val small { font-size: .56rem; font-weight: 500; color: var(--sl-muted); margin-top: .15rem; }
-.pred-name { font-size: 1.35rem; font-weight: 800; letter-spacing: -.03em; color: var(--cat, var(--sl-ink)); transition: color .3s; }
-.pred-bars { display: grid; gap: .55rem; margin-bottom: 1rem; }
-.pb-row { display: grid; grid-template-columns: 6.6rem 1fr 2.9rem; align-items: center; gap: .6rem; font-size: .76rem; color: var(--sl-muted); }
-.pb-row.on { color: var(--sl-ink); font-weight: 700; }
-.pb-track { height: 7px; border-radius: 99px; background: rgba(20, 23, 31, .07); overflow: hidden; }
-.pb-fill { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--cat); transition: width .8s cubic-bezier(.3, .7, .2, 1); }
-.pb-row b { text-align: right; font-variant-numeric: tabular-nums; }
-.pred-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: .35rem; padding: .25rem; border-radius: 999px; background: rgba(20, 23, 31, .06); }
-.pred-tabs button { border: 0; background: transparent; border-radius: 999px; padding: .4rem 0; font-size: .7rem; font-weight: 700; color: var(--sl-muted); transition: background .2s, color .2s, box-shadow .2s; }
-.pred-tabs button[aria-pressed="true"] { background: #fff; color: var(--sl-ink); box-shadow: 0 2px 8px rgba(20, 23, 31, .14); }
+.hero {
+  position: relative; /* patokan untuk lingkaran biru dekoratif (::before) */
+  overflow: hidden; /* potong lingkaran yang keluar dari kartu */
+  margin-top: 0.5rem;
+  padding: clamp(1.5rem, 4vw, 3rem); /* padding mengikuti lebar layar: min 1.5rem, maks 3rem */
+  border-radius: var(--r-xl);
+}
 
-/* ===== BMI cepat ===== */
-.quick-result { background: rgba(255, 255, 255, .6); border: 1px solid var(--glass-edge); border-radius: var(--r-md); padding: 1.2rem; box-shadow: inset 0 1px 0 #fff; }
-.bmi-value { font-size: 2.6rem; font-weight: 800; line-height: 1; letter-spacing: -.04em; color: var(--sl-ink); font-variant-numeric: tabular-nums; }
+/* Semburat biru di pojok kanan atas */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -140px;
+  right: -120px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(10, 108, 240, 0.28), transparent 68%);
+  pointer-events: none; /* tidak menghalangi klik pada tombol di bawahnya */
+}
 
-/* ===== Cara kerja ===== */
-.step-card { padding: 1.7rem 1.4rem; text-align: center; height: 100%; border-radius: var(--r-md); transition: transform .25s, box-shadow .25s; }
-.step-card:hover { transform: translateY(-4px); }
-.step-num { width: 48px; height: 48px; border-radius: 50%; background: var(--sl-ink); color: #fff; display: grid; place-items: center; font-size: 1.15rem; font-weight: 800; margin: 0 auto .95rem; box-shadow: 0 8px 18px -8px rgba(20, 23, 31, .7); }
-.step-card h3 { font-weight: 700; margin-bottom: .4rem; }
-.step-card p { color: var(--sl-muted); font-size: .84rem; margin: 0; line-height: 1.55; }
+.hero > * {
+  position: relative; /* isi hero berada DI ATAS lingkaran dekoratif */
+}
+
+.hero-badge {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  margin-bottom: 1.4rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 8px 20px -12px rgba(30, 50, 100, 0.35);
+}
+
+.hero-badge b {
+  font-size: 0.85rem;
+  color: var(--sl-ink);
+}
+
+.hero-badge span {
+  font-size: 0.74rem;
+  color: var(--sl-muted);
+}
+
+.hero-title {
+  margin-bottom: 1.2rem;
+  font-size: clamp(2.1rem, 5.2vw, 3.6rem); /* judul membesar halus mengikuti layar */
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+}
+
+.hero-title .accent {
+  color: var(--sl-blue);
+}
+
+.hero-lead {
+  max-width: 38rem; /* batasi lebar agar nyaman dibaca (< 80 karakter per baris) */
+  margin-bottom: 1.8rem;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: #4a5163;
+}
+
+.hero-lead b {
+  font-weight: 600;
+  color: var(--sl-ink);
+}
+
+/* ---------- Deretan angka ringkas di bawah hero ---------- */
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 2.2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--sl-line);
+}
+
+.hero-stats .item {
+  padding: 0 1.8rem;
+  border-left: 1px solid var(--sl-line); /* garis pemisah antar angka */
+}
+
+.hero-stats .item:first-child {
+  padding-left: 0; /* item pertama rata kiri, tanpa garis */
+  border-left: 0;
+}
+
+.hero-stats .val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--sl-ink);
+  font-variant-numeric: tabular-nums; /* lebar angka sama agar tidak "goyang" saat berhitung naik */
+}
+
+.hero-stats .lbl {
+  font-size: 0.76rem;
+  color: var(--sl-muted);
+}
+
+/* ---------- Skeleton (kotak abu saat data evaluasi dimuat) ---------- */
+
+.skeleton-stat {
+  height: 132px; /* sama dengan tinggi kartu angka asli agar layout tidak melompat */
+}
+
+/* ---------- CARA KERJA ---------- */
+
+.step-card {
+  height: 100%; /* semua kartu sama tinggi */
+  padding: 1.7rem 1.4rem;
+  border-radius: var(--r-md);
+  text-align: center;
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+
+.step-card:hover {
+  transform: translateY(-4px); /* kartu terangkat sedikit saat disentuh kursor */
+}
+
+.step-num {
+  display: grid;
+  place-items: center; /* angka tepat di tengah lingkaran */
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 0.95rem;
+  border-radius: 50%;
+  background: var(--sl-ink);
+  box-shadow: 0 8px 18px -8px rgba(20, 23, 31, 0.7);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.step-card h3 {
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.step-card p {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--sl-muted);
+}
+
+/* ---------- Animasi muncul saat di-scroll (kelas .reveal diberi .in oleh beranda.js) ---------- */
+
+.reveal {
+  opacity: 0; /* awalnya tersembunyi */
+  transform: translateY(24px); /* dan sedikit turun */
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-out);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none; /* naik ke posisi asli saat masuk layar */
+}
+
+/* ---------- Kalkulator BMI cepat ---------- */
+
+.calc {
+  margin-bottom: 2.5rem;
+  padding: 1.6rem;
+  border-radius: var(--r-lg);
+}
+
+.calc-empty {
+  padding: 1.4rem;
+  border: 1px dashed var(--sl-line);
+  border-radius: var(--r-md);
+  text-align: center;
+  color: var(--sl-muted);
+}
+
+.calc-bmi {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Skala empat warna. Lebar tiap bagian mengikuti rentang BMI 15 sampai 40 */
+.gauge {
+  position: relative;
+  display: flex;
+  height: 12px;
+  border-radius: 99px;
+  background: var(--sl-line);
+}
+
+.gauge i:nth-child(1) { width: 14%; background: var(--c-under, #0a6cf0); border-radius: 99px 0 0 99px; }
+.gauge i:nth-child(2) { width: 26%; background: var(--c-normal); }
+.gauge i:nth-child(3) { width: 20%; background: var(--c-over); }
+.gauge i:nth-child(4) { width: 40%; background: var(--c-obese); border-radius: 0 99px 99px 0; }
+
+/* Penanda posisi BMI, left diisi JS dalam persen */
+.gauge-pin {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 4px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--sl-ink);
+  transform: translateX(-50%);
+  transition: left 0.5s var(--ease-out);
+}
+
+.cat-panel ul {
+  margin: 0.8rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--sl-ink);
+  line-height: 1.7;
+}
+
+/* ---------- Kartu kategori yang bisa diklik ---------- */
+
+.cat-tab {
+  width: 100%;
+  padding: 1.1rem 1rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.7);
+  text-align: left;
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+
+.cat-tab:hover {
+  transform: translateY(-3px);
+}
+
+.cat-tab .dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin-bottom: 0.6rem;
+  border-radius: 50%;
+  background: var(--cat); /* warna diisi JS lewat variabel --cat */
+}
+
+.cat-tab b {
+  display: block;
+  color: var(--sl-ink);
+}
+
+.cat-tab small {
+  color: var(--sl-muted);
+}
+
+/* kartu terpilih diberi garis berwarna sesuai kategorinya */
+.cat-tab[aria-selected="true"] {
+  border-color: var(--cat);
+  box-shadow: 0 12px 24px -14px var(--cat);
+}
+
+.cat-panel {
+  padding: 1.4rem 1.6rem;
+  border-radius: var(--r-md);
+  border-left: 5px solid var(--cat, var(--sl-blue));
+}
+
+.cat-panel h3 {
+  margin-bottom: 0.4rem;
+  color: var(--cat);
+}
+
+.cat-panel p {
+  margin: 0;
+  color: var(--sl-muted);
+  line-height: 1.65;
+}
+
+/* ==========================================================================
+   Gaya di bawah ini TIDAK dipakai index.html. Disimpan karena kemungkinan dipakai
+   halaman lain (mis. klasifikasi). Cek dulu dengan pencarian "pred-" dan "bmi-value"
+   di seluruh proyek; jika tidak ditemukan di mana pun, bagian ini aman dihapus.
+   ========================================================================== */
+
+/* ---------- Widget contoh hasil prediksi ---------- */
+
+.pred {
+  padding: 1.2rem 1.3rem 1.1rem;
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.pred-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.pred-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: var(--sl-blue-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--sl-blue);
+}
+
+.pred-main {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.pred-ring {
+  position: relative;
+  flex: none;
+  width: 92px;
+  height: 92px;
+}
+
+.pred-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* mulai gambar lingkaran dari jam 12 */
+}
+
+.pred-ring circle {
+  fill: none;
+  stroke-width: 9;
+}
+
+.pred-ring .trk {
+  stroke: rgba(20, 23, 31, 0.08); /* jalur abu di belakang */
+}
+
+.pred-ring .bar {
+  stroke: var(--cat, var(--c-normal)); /* warna mengikuti kategori terpilih */
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.9s var(--ease-out),
+    stroke 0.4s;
+}
+
+.pred-ring .val {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--sl-ink);
+}
+
+.pred-ring .val small {
+  margin-top: 0.15rem;
+  font-size: 0.56rem;
+  font-weight: 500;
+  color: var(--sl-muted);
+}
+
+.pred-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--cat, var(--sl-ink));
+  transition: color 0.3s;
+}
+
+.pred-bars {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.pb-row {
+  display: grid;
+  grid-template-columns: 6.6rem 1fr 2.9rem; /* nama | batang | persen */
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.76rem;
+  color: var(--sl-muted);
+}
+
+.pb-row.on {
+  font-weight: 700;
+  color: var(--sl-ink);
+}
+
+.pb-row b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(20, 23, 31, 0.07);
+}
+
+.pb-fill {
+  display: block;
+  width: 0; /* lebar diisi JS lalu beranimasi */
+  height: 100%;
+  border-radius: 99px;
+  background: var(--cat);
+  transition: width 0.8s var(--ease-out);
+}
+
+.pred-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(20, 23, 31, 0.06);
+}
+
+.pred-tabs button {
+  padding: 0.4rem 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--sl-muted);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+
+.pred-tabs button[aria-pressed="true"] {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 23, 31, 0.14);
+  color: var(--sl-ink);
+}
+
+/* ---------- Hasil BMI cepat ---------- */
+
+.quick-result {
+  padding: 1.2rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.bmi-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--sl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Layar kecil (≤ 767px) ---------- */
 
 @media (max-width: 767.98px) {
-  .hero-stats .item { padding: 0 1rem; }
-  .hero-stats { row-gap: 1rem; }
-  .pb-row { grid-template-columns: 5.4rem 1fr 2.7rem; }
+  .hero-stats {
+    row-gap: 1rem;
+  }
+
+  .hero-stats .item {
+    padding: 0 1rem;
+  }
+
+  .pb-row {
+    grid-template-columns: 5.4rem 1fr 2.7rem;
+  }
+}
+
+/* ---------- Hormati pengguna yang mematikan animasi di pengaturan perangkatnya ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .gauge-pin,
+  .cat-tab,
+  .step-card,
+  .pred-ring .bar,
+  .pred-name,
+  .pb-fill,
+  .pred-tabs button {
+    transition: none;
+  }
+
+  .step-card:hover,
+  .cat-tab:hover {
+    transform: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

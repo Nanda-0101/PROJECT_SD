@@ -1,9 +1,3 @@
-/* =========================================================
-   Sakit-Learn · gaya bersama
-   Bootstrap 5.3 + tema "glass" ala iOS.
-   Gaya khusus tiap halaman ada di css/<halaman>.css
-   ========================================================= */
-
 /* ---------- 1. Token desain ---------- */
 :root {
   --sl-blue: #0a6cf0;
@@ -51,7 +45,7 @@ body {
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
 }
-/* Bola warna di belakang kaca: tanpa ini efek blur tidak terlihat. */
+/* Bola warna di belakang kaca, tanpa ini efek blur tidak terlihat. */
 body::before {
   content: "";
   position: fixed;
@@ -75,7 +69,7 @@ a { text-decoration: none; }
 .section-title { display: flex; align-items: center; gap: .55rem; font-weight: 800; font-size: 1.35rem; letter-spacing: -.03em; margin: 2.2rem 0 1rem; }
 .section-title i { color: var(--sl-blue); }
 
-/* ---------- 3. Kaca (glass) ---------- */
+/* ---------- 3. Kaca ---------- */
 .glass {
   background: var(--glass);
   -webkit-backdrop-filter: blur(22px) saturate(170%);
@@ -87,7 +81,7 @@ a { text-decoration: none; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass { background: rgba(255, 255, 255, .94); }
 }
-/* kilau yang mengikuti kursor (diatur oleh common.js) */
+/* kilau yang mengikuti kursor (diatur common.js) */
 .glass-spot { position: relative; overflow: hidden; isolation: isolate; }
 .glass-spot::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;

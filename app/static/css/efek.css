@@ -1,0 +1,200 @@
+/* ==========================================================================
+   efek.css
+   Poles tampilan yang dipakai bersama oleh Beranda, Riwayat, dan Daftar.
+   Warna dan desain lama tidak diganti. Semua warna di sini memakai variabel
+   yang sudah ada (--sl-blue, --sl-blue-soft, --sl-line) jadi tema tetap sama.
+   ========================================================================== */
+
+/* ---------- Dasar halaman ---------- */
+
+html {
+  scroll-behavior: smooth; /* klik tautan atau tombol gulung layar terasa halus */
+}
+
+body {
+  animation: fx-fade 0.5s both; /* halaman masuk dengan fade tipis */
+}
+
+@keyframes fx-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+::selection {
+  background: var(--sl-blue-soft); /* teks yang diblok memakai biru lembut tema */
+}
+
+/* ---------- Tombol ---------- */
+
+.btn {
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px); /* tombol terangkat sedikit saat disorot */
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97); /* terasa ditekan saat diklik */
+}
+
+/* Fokus keyboard dibuat jelas dan seragam */
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--sl-blue) 45%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---------- Kolom isian ---------- */
+
+.form-control,
+.form-select {
+  transition:
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sl-blue);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sl-blue) 18%, transparent); /* cincin biru lembut */
+}
+
+/* ---------- Tabel ---------- */
+
+.table > tbody > tr {
+  transition: background-color 0.2s;
+}
+
+.table > tbody > tr:hover > * {
+  background-color: color-mix(in srgb, var(--sl-blue) 6%, transparent); /* baris yang disorot ikut berwarna */
+}
+
+/* ---------- Kartu dengan cahaya yang mengikuti kursor (dibuat efek.js) ---------- */
+
+.fx-card {
+  position: relative;
+}
+
+.fx-spot {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--sl-blue) 11%, transparent), transparent 70%);
+  opacity: 0;
+  pointer-events: none; /* tidak menghalangi klik di bawahnya */
+  transition: opacity 0.3s;
+}
+
+.fx-card:hover > .fx-spot {
+  opacity: 1;
+}
+
+/* ---------- Efek riak saat tombol diklik ---------- */
+
+.fx-ripple-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.fx-ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.25;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: fx-ripple 0.6s ease-out forwards;
+}
+
+@keyframes fx-ripple {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(28);
+  }
+}
+
+/* ---------- Bar kemajuan scroll di paling atas ---------- */
+
+#fxProgress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  width: 100%;
+  height: 3px;
+  background: var(--sl-blue);
+  transform: scaleX(0); /* lebar diatur efek.js lewat scaleX */
+  transform-origin: left;
+}
+
+/* ---------- Tombol kembali ke atas ---------- */
+
+#fxTop {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 1040;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sl-blue);
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--sl-blue) 70%, transparent);
+  font-size: 1.2rem;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none; /* tidak bisa diklik selagi tersembunyi */
+  transform: translateY(14px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+#fxTop.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+#fxTop:hover {
+  transform: translateY(-3px);
+}
+
+/* Hormati pengguna yang mematikan animasi di perangkatnya */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body,
+  .btn,
+  .fx-ripple,
+  #fxTop {
+    animation: none;
+    transition: none;
+  }
+
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Saat dicetak semua hiasan disembunyikan */
+@media print {
+  #fxProgress,
+  #fxTop,
+  .fx-spot,
+  .fx-ripple {
+    display: none !important;
+  }
+}

@@ -1,20 +1,459 @@
-/* Halaman Riwayat */
-.chart-box { position: relative; height: 260px; display: grid; place-items: center; }
-.chart-box.short { height: 230px; }
-.chart-box canvas { position: absolute; inset: 0; }
-.chart-empty { display: flex; flex-direction: column; align-items: center; gap: .4rem; color: #9aa3b8; font-size: .85rem; }
-.chart-empty[hidden] { display: none; }
-.chart-empty i { font-size: 2.4rem; opacity: .7; }
-#historyBody td { white-space: nowrap; }
-.row-actions { display: inline-flex; gap: .35rem; }
-.row-actions .btn { width: 34px; height: 34px; padding: 0; display: inline-grid; place-items: center; }
-.sum-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--sl-line); }
-.sum-row:last-child { border-bottom: none; }
-.sum-row b { font-variant-numeric: tabular-nums; }
-.detail-grid { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1.3rem; margin: 0; }
-.detail-grid dt { color: var(--sl-muted); font-weight: 500; }
-.detail-grid dd { margin: 0; font-weight: 600; }
-.mini-bar { height: 8px; background: rgba(20, 23, 31, .07); border-radius: 4px; overflow: hidden; }
-.mini-bar i { display: block; height: 100%; border-radius: 4px; }
-.confirm-icon { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-size: 1.2rem; color: var(--c-obese); background: rgba(229, 56, 79, .12); margin-bottom: .9rem; }
-.btn-danger { --bs-btn-bg: var(--c-obese); --bs-btn-border-color: var(--c-obese); --bs-btn-hover-bg: #c92a40; --bs-btn-hover-border-color: #c92a40; }
+/* ==========================================================================
+   Halaman Riwayat
+   Variabel seperti --sl-line, --sl-muted, --c-obese berasal dari common.css.
+   ========================================================================== */
+
+/* ---------- Kotak grafik ---------- */
+
+.chart-box {
+  position: relative; /* patokan untuk kanvas yang diposisikan absolut */
+  display: grid;
+  place-items: center; /* pesan "Belum ada data" tepat di tengah */
+  height: 260px; /* Chart.js butuh tinggi tetap pada pembungkusnya */
+}
+
+.chart-box.short {
+  height: 230px; /* varian lebih pendek untuk grafik garis */
+}
+
+.chart-box canvas {
+  position: absolute;
+  inset: 0; /* kanvas memenuhi seluruh kotak */
+}
+
+/* Pesan saat belum ada data */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #9aa3b8;
+}
+
+.chart-empty[hidden] {
+  display: none; /* wajib: display:flex di atas akan menimpa atribut hidden bawaan */
+}
+
+.chart-empty i {
+  font-size: 2.4rem;
+  opacity: 0.7;
+}
+
+/* ---------- Tabel ---------- */
+
+#historyBody td {
+  white-space: nowrap; /* isi sel tidak turun baris; tabel bergeser menyamping di layar kecil */
+}
+
+.row-actions {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.row-actions .btn {
+  display: inline-grid;
+  place-items: center; /* ikon tepat di tengah tombol persegi */
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+/* ---------- Ringkasan statistik ---------- */
+
+.sum-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--sl-line);
+}
+
+.sum-row:last-child {
+  border-bottom: none; /* baris terakhir tanpa garis bawah */
+}
+
+.sum-row b {
+  font-variant-numeric: tabular-nums; /* lebar angka sama agar sejajar */
+}
+
+/* ---------- Modal detail ---------- */
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr; /* kolom label menyesuaikan isi, nilai mengisi sisa ruang */
+  gap: 0.4rem 1.3rem;
+  margin: 0;
+}
+
+.detail-grid dt {
+  font-weight: 500;
+  color: var(--sl-muted);
+}
+
+.detail-grid dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.mini-bar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgba(20, 23, 31, 0.07);
+}
+
+.mini-bar i {
+  display: block;
+  height: 100%; /* lebar & warna diisi JS lewat atribut style */
+  border-radius: 4px;
+}
+
+/* ---------- Modal konfirmasi hapus ---------- */
+
+.confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.9rem;
+  border-radius: 50%;
+  background: rgba(229, 56, 79, 0.12);
+  font-size: 1.2rem;
+  color: var(--c-obese);
+}
+
+/* Tombol bahaya memakai warna merah kategori "obese" agar seragam dengan seluruh situs */
+.btn-danger {
+  --bs-btn-bg: var(--c-obese);
+  --bs-btn-border-color: var(--c-obese);
+  --bs-btn-hover-bg: #c92a40;
+  --bs-btn-hover-border-color: #c92a40;
+}
+
+/* ---------- Chip filter kategori ---------- */
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--sl-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sl-ink);
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+}
+
+.chip .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--cat, var(--sl-muted)); /* warna titik mengikuti kategori */
+}
+
+.chip .num {
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: rgba(20, 23, 31, 0.07);
+  font-size: 0.72rem;
+}
+
+/* chip yang sedang dipilih dibalik jadi gelap */
+.chip.active {
+  border-color: var(--sl-ink);
+  background: var(--sl-ink);
+  color: #fff;
+}
+
+.chip.active .num {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Batang keyakinan kecil di dalam tabel ---------- */
+
+.conf-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.conf-cell .mini-bar {
+  flex: 1;
+}
+
+/* Baris tabel muncul halus saat dirender */
+#historyBody tr {
+  animation: row-in 0.35s both;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .ach,
+  #historyBody tr {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---------- Tombol ganti tampilan (tabel atau kartu) ---------- */
+
+.view-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(20, 23, 31, 0.06);
+}
+
+.view-toggle button {
+  padding: 0.35rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sl-muted);
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+/* tombol yang aktif tampil putih dengan bayangan tipis */
+.view-toggle button[aria-pressed="true"] {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 23, 31, 0.14);
+  color: var(--sl-ink);
+}
+
+/* ---------- Kartu riwayat ---------- */
+
+.hist-card {
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--sl-line);
+  border-left: 5px solid var(--cat); /* garis kiri berwarna sesuai kategori */
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.75);
+  animation: row-in 0.35s both;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.hist-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px -16px rgba(30, 50, 100, 0.4);
+}
+
+.hist-card .bmi {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lencana selisih BMI. Naik berwarna oranye, turun berwarna hijau */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.delta.up {
+  background: rgba(245, 159, 0, 0.15);
+  color: #b36f00;
+}
+
+.delta.down {
+  background: rgba(43, 162, 76, 0.14);
+  color: var(--c-normal);
+}
+
+.delta.same {
+  background: rgba(20, 23, 31, 0.07);
+  color: var(--sl-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hist-card,
+  .compare-panel,
+  .trend-dot,
+  .view-toggle button {
+    animation: none;
+    transition: none;
+  }
+
+  .hist-card:hover {
+    transform: none;
+  }
+}
+
+/* ---------- Pita pencapaian ---------- */
+
+.ach {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--sl-blue-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sl-blue);
+  animation: row-in 0.4s both;
+}
+
+/* ---------- Bilah aksi massal ---------- */
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(229, 56, 79, 0.1);
+  font-size: 0.86rem;
+}
+
+/* ---------- Catatan pribadi ---------- */
+
+.note-icon {
+  margin-left: 0.35rem;
+  color: var(--sl-blue); /* ikon kecil penanda riwayat ini punya catatan */
+}
+
+/* ---------- Cetak / PDF ---------- */
+
+.print-only {
+  display: none; /* di layar biasa tidak terlihat */
+}
+
+@media print {
+  /* Sembunyikan semua yang interaktif, sisakan isi laporan */
+  #site-navbar,
+  #site-footer,
+  .skip-link,
+  .chip-row,
+  .view-toggle,
+  #btnPrint,
+  #bulkBar,
+  #pager,
+  #loadError,
+  section[aria-label="Filter riwayat"],
+  #selAll,
+  .row-check,
+  .row-actions,
+  th:last-child,
+  td:last-child,
+  .toast-container {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    color: #555;
+  }
+
+  .sl-card,
+  tr,
+  .chart-box {
+    break-inside: avoid; /* jangan terpotong di tengah halaman */
+  }
+}
+
+/* ---------- Grafik tren BMI ---------- */
+
+#trendBox svg {
+  display: block;
+  width: 100%;
+  height: auto; /* tinggi mengikuti viewBox, jadi grafik ikut mengecil di layar kecil */
+}
+
+.trend-band {
+  fill: var(--c-normal);
+  opacity: 0.13; /* pita hijau tipis penanda rentang BMI normal */
+}
+
+.trend-grid {
+  stroke: var(--sl-line);
+  stroke-dasharray: 3 4;
+}
+
+.trend-label {
+  font-size: 11px;
+  fill: var(--sl-muted);
+}
+
+.trend-line {
+  fill: none;
+  stroke: var(--sl-blue);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.trend-dot {
+  stroke: #fff;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.2s;
+}
+
+.trend-dot:hover {
+  r: 8; /* titik membesar saat disorot */
+}
+
+/* ---------- Panel bandingkan dua tes ---------- */
+
+.compare-panel {
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--sl-line);
+  border-radius: var(--r-md);
+  background: var(--sl-blue-soft);
+  animation: row-in 0.35s both;
+}
+
+.compare-panel table {
+  margin: 0;
+  font-size: 0.88rem;
+  --bs-table-bg: transparent; /* biar warna biru lembut panel tetap terlihat */
+}
+
+.compare-panel th {
+  color: var(--sl-muted);
+  font-weight: 600;
+}
