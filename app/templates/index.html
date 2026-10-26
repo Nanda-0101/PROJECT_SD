@@ -67,10 +67,10 @@
 
             <!-- Tombol aksi: url_for('klasifikasi') = alamat route Flask bernama "klasifikasi" -->
             <div class="d-flex flex-wrap align-items-center gap-3">
-              <a class="btn btn-sl btn-lg px-4" href="{{ url_for('klasifikasi') }}">
+              <a class="btn btn-sl btn-lg px-4" href="{{ url_for('main.klasifikasi') }}">
                 <i class="bi bi-play-circle-fill me-1" aria-hidden="true"></i> Mulai Klasifikasi
               </a>
-              <a class="btn btn-link" href="{{ url_for('tentang') }}">
+              <a class="btn btn-link" href="{{ url_for('main.tentang') }}">
                 <i class="bi bi-info-circle me-1" aria-hidden="true"></i> Pelajari Model
               </a>
             </div>
@@ -121,11 +121,7 @@
             <div class="col-md-3 col-6"><div class="skeleton skeleton-stat"></div></div>
           </div>
 
-          <!--
-            KEADAAN 2 — gagal: kotak peringatan + tombol "Coba lagi".
-            d-flex d-none: di Bootstrap, d-none ditulis SETELAH d-flex sehingga menang (tersembunyi).
-            Cukup hapus kelas d-none lewat JS untuk menampilkannya sebagai flex.
-          -->
+          <!-- KEADAAN 2 — gagal: kotak peringatan + tombol "Coba lagi". -->
           <div
             id="evalError"
             class="alert alert-warning d-flex d-none align-items-center justify-content-between"
@@ -215,43 +211,6 @@
           </div>
         </li>
       </ol>
-
-      <!-- ===== KALKULATOR BMI CEPAT, dihitung langsung di browser tanpa kirim data ke server ===== -->
-      <h2 class="section-title reveal"><i class="bi bi-calculator-fill" aria-hidden="true"></i> Cek BMI Cepat</h2>
-      <section class="calc glass reveal" aria-label="Kalkulator BMI">
-        <div class="row g-4 align-items-center">
-          <!-- Kiri berisi dua kolom isian -->
-          <div class="col-lg-5">
-            <label class="form-label fw-semibold" for="qTinggi">Tinggi badan (cm)</label>
-            <input class="form-control mb-3" id="qTinggi" type="number" inputmode="decimal" min="100" max="250" placeholder="contoh 165" />
-            <label class="form-label fw-semibold" for="qBerat">Berat badan (kg)</label>
-            <input class="form-control" id="qBerat" type="number" inputmode="decimal" min="20" max="300" placeholder="contoh 60" />
-          </div>
-          <!-- Kanan berisi hasil yang berubah tiap angka diketik -->
-          <div class="col-lg-7" aria-live="polite">
-            <div class="calc-empty" id="qEmpty">Isi tinggi dan berat badan, hasilnya muncul di sini.</div>
-            <div id="qResult" hidden>
-              <div class="d-flex align-items-baseline gap-3 mb-2">
-                <span class="calc-bmi" id="qBmi">0</span>
-                <b id="qCat"></b>
-              </div>
-              <!-- Skala BMI, penanda bergeser sesuai hasil -->
-              <div class="gauge"><i></i><i></i><i></i><i></i><span class="gauge-pin" id="qPin"></span></div>
-              <p class="small text-muted mt-3 mb-2" id="qIdeal"></p>
-              <button class="btn btn-sm btn-outline-primary" id="qLearn" type="button">Lihat penjelasan dan tips</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== KATEGORI: 4 kartu yang bisa diklik, isi penjelasannya muncul di panel bawahnya ===== -->
-      <h2 class="section-title reveal"><i class="bi bi-grid-fill" aria-hidden="true"></i> Empat Kategori Hasil</h2>
-      <section class="reveal" aria-label="Penjelasan kategori">
-        <!-- tombol dibuat beranda.js dari daftar CATEGORY_INFO -->
-        <div class="row g-3 mb-3" id="catTabs" role="tablist"></div>
-        <!-- panel penjelasan, isinya berganti setiap kartu diklik -->
-        <div class="cat-panel glass" id="catPanel" aria-live="polite"></div>
-      </section>
     </main>
 
     <!-- Footer disuntikkan oleh layout.js -->
