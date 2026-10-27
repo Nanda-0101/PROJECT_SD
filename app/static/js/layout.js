@@ -1,30 +1,18 @@
-/* Sakit-Learn · memuat komponen bersama (navbar & footer) ke setiap halaman.
-   Edit components/navbar.html atau components/footer.html, perubahannya langsung berlaku di semua halaman.
-   Butuh server (Live Server). Membuka file HTML dengan klik dua kali tidak bisa memuat komponen. */
+/* Layout: tandai menu aktif & efek scroll navbar. Navbar/footer sudah dirender server-side (Jinja). */
 (() => {
   "use strict";
-  const base = ((window.SL_CONFIG && window.SL_CONFIG.COMPONENTS_PATH) || "components/").replace(/\/?$/, "/");
-  const slots = { "site-navbar": base + "navbar.html", "site-footer": base + "footer.html" };
 
-  async function load(id, url) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(res.status);
-      el.innerHTML = await res.text();
-    } catch {
-      el.innerHTML = `<div class="alert alert-warning m-3 small" role="alert">Komponen <code>${url}</code> gagal dimuat. Buka halaman lewat <strong>Live Server</strong>, bukan dengan klik dua kali file HTML.</div>`;
-    }
-  }
-
-  window.SL_LAYOUT = (async () => {
-    await Promise.all(Object.entries(slots).map(([id, url]) => load(id, url)));
+  // Tunggu DOM siap (navbar sudah ada di HTML hasil render Flask)
+  document.addEventListener("DOMContentLoaded", () => {
     const page = document.body.dataset.page;
     document.querySelectorAll("[data-nav]").forEach((a) => {
       const active = a.dataset.nav === page;
       a.classList.toggle("active", active);
-      if (active) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      if (active) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
     });
-  })();
+  });
+
+  // Kompatibilitas: SL_LAYOUT tetap resolve agar common.js lama tidak error jika masih dipakai
+  window.SL_LAYOUT = Promise.resolve();
 })();

@@ -1,8 +1,6 @@
-/* Pengaturan frontend. */
 window.SL_CONFIG = {
-  USE_MOCK: false,               // <-- WAJIB false: pakai backend Flask asli
-  API_BASE: "",                  // karena satu origin (Flask yang serve static juga)
-  COMPONENTS_PATH: "/static/components/",
+  API_BASE: "",
+  ML_API_BASE: "/api/ml",
   PAGES: {
     beranda: "/",
     masuk: "/masuk",

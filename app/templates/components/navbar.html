@@ -1,0 +1,60 @@
+<div class="container">
+  {# Navbar bersama. Dirender server-side (Jinja2). #}
+  <nav class="navbar navbar-expand-lg navbar-custom" aria-label="Navigasi utama">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('main.beranda') }}">
+        <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i> Sakit-Learn
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Buka menu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="{{ url_for('main.beranda') }}" data-nav="beranda">
+              <i class="bi bi-house-door-fill"></i>Beranda
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="{{ url_for('main.klasifikasi') }}" data-nav="klasifikasi">
+              <i class="bi bi-graph-up-arrow"></i>Klasifikasi
+              {% if not current_user %}<i class="bi bi-lock-fill lock-icon" title="Perlu login"></i>{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="{{ url_for('main.riwayat') }}" data-nav="riwayat">
+              <i class="bi bi-clock-history"></i>Riwayat
+              {% if not current_user %}<i class="bi bi-lock-fill lock-icon" title="Perlu login"></i>{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="{{ url_for('main.tentang') }}" data-nav="tentang">
+              <i class="bi bi-info-circle-fill"></i>Tentang
+            </a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0" id="navAuth">
+          {% if current_user %}
+            <span class="user-chip">
+              <span class="avatar" aria-hidden="true">{{ current_user.nama_lengkap[0]|upper }}</span>
+              {{ current_user.nama_lengkap }}
+            </span>
+            <form method="POST" action="{{ url_for('main.keluar') }}" class="m-0">
+              <button class="btn btn-outline-danger btn-sm" type="submit" title="Keluar" aria-label="Keluar">
+                <i class="bi bi-box-arrow-right"></i>
+              </button>
+            </form>
+          {% else %}
+            <a class="btn btn-outline-primary btn-sm px-3" href="{{ url_for('main.masuk') }}">
+              <i class="bi bi-box-arrow-in-right"></i> Masuk
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

@@ -1,13 +1,13 @@
 import os
-from flask import Flask
+from datetime import timedelta
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from datetime import timedelta
 from config import config
 
+# Inisialisasi ekstensi secara global (tanpa app)
 db = SQLAlchemy()
 migrate = Migrate()
-
 
 def create_app(config_name=None):
     if config_name is None:
@@ -15,24 +15,33 @@ def create_app(config_name=None):
 
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-
-    # Session cookie: hanya dikirim lewat HTTP (matikan saat dev pakai http)
+    
+    # Konfigurasi keamanan session
     app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
     app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
     app.config.setdefault("PERMANENT_SESSION_LIFETIME", timedelta(days=7))
 
+    # Inisialisasi ekstensi dengan app
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Import models agar terdeteksi oleh SQLAlchemy & Flask-Migrate
     from app import models  # noqa: F401
+    from app.models import User
 
-    # Blueprint halaman (HTML)
+    # Registrasi Blueprints di dalam application factory
     from app.routes import main_bp
+    from app.ml_routes import ml_bp
+    
     app.register_blueprint(main_bp)
+    app.register_blueprint(ml_bp)
 
-    # Blueprint API autentikasi (JSON)
-    from app.auth import auth_api_bp
-    from app.auth import api as auth_api_module  # noqa: F401 (agar route terdaftar)
-    app.register_blueprint(auth_api_bp)
+    # Context processor untuk injeksi user yang sedang login
+    @app.context_processor
+    def inject_current_user():
+        user_id = session.get("user_id")
+        if not user_id:
+            return {"current_user": None}
+        return {"current_user": db.session.get(User, user_id)}
 
     return app

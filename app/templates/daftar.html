@@ -1,192 +1,60 @@
 <!doctype html>
-<!-- Template Flask: kode dalam tanda kurung kurawal ganda diisi server (Jinja2) -->
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#eef2f9" />
     <title>Daftar · Sakit-Learn</title>
-    <!-- Sebelumnya "Sign Up": disamakan dengan bahasa seluruh situs -->
 
-    <!-- Font Inter dari Google Fonts (preconnect = koneksi dibuka lebih awal) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Pustaka pihak ketiga -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 
-    <!--
-      masuk.css = kartu form yang dipakai bersama halaman Masuk & Daftar.
-    -->
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/masuk.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='css/daftar.css') }}" rel="stylesheet" />
-    <!-- Poles tampilan bersama, dimuat paling akhir supaya tidak tertimpa -->
     <link href="{{ url_for('static', filename='css/efek.css') }}" rel="stylesheet" />
   </head>
 
   <body data-page="daftar">
     <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
-    <div id="site-navbar"></div>
+
+    <div id="site-navbar">
+      {% include 'components/navbar.html' %}
+    </div>
 
     <main class="container pb-5" id="main">
       <div class="auth-wrap">
-        <!-- pembungkus: menaruh kartu di tengah halaman -->
         <div class="auth-card glass">
-          <!-- Kepala kartu: logo + judul -->
           <div class="auth-header">
-            <span class="auth-logo"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i></span>
-            <h1>Sakit-Learn</h1>
-            <p>Daftar akun baru</p>
+            <span class="auth-logo"><i class="bi bi-person-plus-fill" aria-hidden="true"></i></span>
+            <h1>Pendaftaran</h1>
+            <p>Belum tersedia</p>
           </div>
 
-          <div class="auth-body">
-            <!-- Tempat pesan error dari server. aria-live: pembaca layar membacakan saat isinya muncul -->
-            <div id="formAlert" aria-live="polite"></div>
-
-            <!-- Pemberitahuan mode demo; JS membuangnya dari "d-none" bila USE_MOCK aktif -->
-            <div class="alert alert-info py-2 small d-none" id="mockNotice" role="note">
-              Mode demo tanpa server: data hanya tersimpan di browser ini. Jangan pakai password asli.
-            </div>
-
-            <!-- Bar kemajuan pengisian, lebarnya diatur daftar.js sesuai jumlah kolom yang sudah valid -->
-            <div class="form-progress mb-3" aria-hidden="true"><span id="formProgress"></span></div>
-
-            <!-- novalidate: matikan balon validasi bawaan browser; validasi ditangani daftar.js + gaya Bootstrap -->
-            <form id="signupForm" novalidate>
-              <!-- Field 1: Nama lengkap -->
-              <div class="mb-3 field">
-                <label class="form-label" for="name">Nama Lengkap</label>
-                <div class="input-group has-validation">
-                  <!-- has-validation: pesan error menempel rapi di grup input -->
-                  <span class="input-group-text"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name"
-                    name="name"
-                    placeholder="Nama lengkap"
-                    autocomplete="name"
-                    minlength="2"
-                    maxlength="60"
-                    required
-                  />
-                  <div class="invalid-feedback">Isi nama Anda (2-60 karakter).</div>
-                </div>
-              </div>
-
-              <!-- Field 2: Username. pattern = aturan karakter yang diizinkan (regex) -->
-              <div class="mb-3 field">
-                <label class="form-label" for="username">Username</label>
-                <div class="input-group has-validation">
-                  <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username"
-                    name="username"
-                    placeholder="Username unik"
-                    autocomplete="username"
-                    autocapitalize="none"
-                    spellcheck="false"
-                    pattern="[a-zA-Z0-9_.]{3,30}"
-                    required
-                    aria-describedby="usernameHelp"
-                  />
-                  <div class="invalid-feedback">Username belum sesuai aturan di bawah.</div>
-                </div>
-                <div class="form-text" id="usernameHelp">3-30 karakter: huruf, angka, titik, atau garis bawah.</div>
-              </div>
-
-              <!-- Field 3: Password + tombol mata + meter kekuatan -->
-              <div class="mb-3 field">
-                <label class="form-label" for="password">Password</label>
-                <div class="input-group has-validation">
-                  <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    name="password"
-                    placeholder="Min. 6 karakter"
-                    autocomplete="new-password"
-                    minlength="6"
-                    required
-                    aria-describedby="strengthText"
-                  />
-                  <button
-                    class="btn btn-outline-secondary pw-toggle"
-                    type="button"
-                    id="togglePw"
-                    aria-label="Tampilkan password"
-                  >
-                    <i class="bi bi-eye" aria-hidden="true"></i>
-                  </button>
-                  <div class="invalid-feedback">Password minimal 6 karakter.</div>
-                </div>
-                <!-- 4 kotak kecil; daftar.js mengisi atribut data-level (1-4), daftar.css mewarnainya -->
-                <div class="strength mt-2" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-                <div class="form-text" id="strengthText" aria-live="polite">
-                  Gunakan campuran huruf, angka, dan simbol.
-                </div>
-                <!-- Peringatan Caps Lock, muncul saat tombol itu aktif -->
-                <div class="form-text text-warning-emphasis d-none" id="capsWarn">
-                  <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Caps Lock sedang aktif
-                </div>
-                <!-- Daftar syarat password, tiap item dicentang otomatis oleh daftar.js -->
-                <ul class="pw-rules" id="pwRules">
-                  <li data-rule="len"><i class="bi bi-circle" aria-hidden="true"></i> Minimal 6 karakter</li>
-                  <li data-rule="case"><i class="bi bi-circle" aria-hidden="true"></i> Huruf besar dan kecil</li>
-                  <li data-rule="num"><i class="bi bi-circle" aria-hidden="true"></i> Ada angka</li>
-                  <li data-rule="sym"><i class="bi bi-circle" aria-hidden="true"></i> Ada simbol</li>
-                </ul>
-              </div>
-
-              <!-- Field 4: Konfirmasi password -->
-              <div class="mb-4 field">
-                <label class="form-label" for="confirm">Konfirmasi Password</label>
-                <div class="input-group has-validation">
-                  <span class="input-group-text"><i class="bi bi-lock-fill" aria-hidden="true"></i></span>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="confirm"
-                    name="confirm"
-                    placeholder="Ulangi password"
-                    autocomplete="new-password"
-                    required
-                  />
-                  <div class="invalid-feedback">Konfirmasi harus sama dengan password.</div>
-                  <!-- sebelumnya "belum sama" juga tampil saat kosong -->
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-sl btn-lg w-100" id="btnSubmit">
-                <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Daftar
-              </button>
-            </form>
-
-            <p class="auth-switch">Sudah punya akun? <a href="{{ url_for('main.masuk') }}">Masuk</a></p>
-            <!-- sebelumnya "Login" -->
+          <div class="auth-body text-center py-3">
+            <p class="text-muted mb-3">
+              Pendaftaran akun baru akan dibuka pada rilis berikutnya. Untuk sementara, silakan gunakan akun
+              yang sudah terdaftar.
+            </p>
+            <a href="{{ url_for('main.masuk') }}" class="btn btn-sl">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Ke Halaman Masuk
+            </a>
           </div>
         </div>
       </div>
     </main>
 
-    <div id="site-footer"></div>
+    <div id="site-footer">
+      {% include 'components/footer.html' %}
+    </div>
 
-    <!-- Urutan skrip: pustaka → config → mock-api → layout → common → skrip halaman -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/daftar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
   </body>
 </html>

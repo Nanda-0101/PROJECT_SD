@@ -1,206 +1,322 @@
-/* Halaman Klasifikasi: form, pratinjau BMI, panggilan /api/predict, render hasil. */
+/* Halaman Klasifikasi: kirim data ke /api/ml/predict (Flask), render hasil
+   dengan probabilitas per model (LightGBM, MLP, Ensemble) + feedback. */
 (() => {
   "use strict";
-  const { CATEGORIES, CATEGORY_KEYS, api, fmt, escapeHtml, calcBmi, bmiKey, bmiPosition, toast, setLoading } = SL;
+
+  const CLASS_LABELS = ["Underweight", "Normal weight", "Overweight", "Obese"];
+
+  const META = {
+    "Underweight":   { color: "#06b6d4", icon: "bi-arrow-down-circle" },
+    "Normal weight": { color: "#16a34a", icon: "bi-check-circle" },
+    "Overweight":    { color: "#f5a700", icon: "bi-exclamation-circle" },
+    "Obese":         { color: "#e5384f", icon: "bi-x-octagon" },
+  };
+
+  const RECOMMENDATIONS = {
+    "Underweight":   "Tingkatkan asupan kalori bergizi dan konsultasikan ke ahli gizi.",
+    "Normal weight": "Pertahankan pola makan sehat dan aktivitas fisik rutin.",
+    "Overweight":    "Kurangi makanan tinggi gula/lemak dan tingkatkan olahraga.",
+    "Obese":         "Segera konsultasi ke dokter atau ahli gizi untuk program penurunan berat badan.",
+  };
 
   const form = document.getElementById("classifyForm");
-  const loading = document.getElementById("loading");
-  const progress = document.getElementById("progressFill");
-  const container = document.getElementById("resultContainer");
   const submitBtn = document.getElementById("btnSubmit");
-  const heightEl = document.getElementById("height");
-  const weightEl = document.getElementById("weight");
+  const container = document.getElementById("resultContainer");
   const emptyHtml = container.innerHTML;
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- Pratinjau BMI langsung ---------- */
-  function updatePreview() {
-    const h = parseFloat(heightEl.value), w = parseFloat(weightEl.value);
-    const valid = h >= 50 && h <= 250 && w >= 10 && w <= 300;
-    document.getElementById("previewEmpty").hidden = valid;
-    document.getElementById("previewBody").hidden = !valid;
-    if (!valid) return;
-    const bmi = calcBmi(h, w), key = bmiKey(bmi);
-    document.getElementById("pvBmi").textContent = fmt(bmi, 1);
-    const badge = document.getElementById("pvBadge");
-    badge.textContent = CATEGORIES[key].name;
-    badge.className = `cat-pill cat-${key}`;
-    document.getElementById("pvMarker").style.left = bmiPosition(bmi) + "%";
+  const fmt = (n, d = 1) => Number(n).toFixed(d);
+  const escapeHtml = (s) =>
+    String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  /* ---------- Normalisasi respons backend ---------- */
+  function normalize(apiData) {
+    const hasPerModel = apiData.lgbm && apiData.mlp && apiData.ensemble;
+
+    let ensemble, lgbm, mlp;
+
+    if (hasPerModel) {
+      ensemble = apiData.ensemble;
+      lgbm = apiData.lgbm;
+      mlp = apiData.mlp;
+    } else {
+      ensemble = {};
+      CLASS_LABELS.forEach((label, i) => {
+        const v = apiData.probabilities?.[`Class_${i}`];
+        ensemble[label] = typeof v === "number" ? v * 100 : 0;
+      });
+      lgbm = null;
+      mlp = null;
+    }
+
+    const winnerIdx =
+      typeof apiData.prediction === "number"
+        ? apiData.prediction
+        : CLASS_LABELS.reduce(
+            (best, label, i) => (ensemble[label] > ensemble[CLASS_LABELS[best]] ? i : best),
+            0
+          );
+
+    const winnerLabel = CLASS_LABELS[winnerIdx] ?? "Normal weight";
+    const confidence =
+      typeof apiData.confidence === "number"
+        ? apiData.confidence
+        : ensemble[winnerLabel] ?? 0;
+
+    return { ensemble, lgbm, mlp, winnerIdx, winnerLabel, confidence, hasPerModel };
   }
-  heightEl.addEventListener("input", updatePreview);
-  weightEl.addEventListener("input", updatePreview);
 
-  // Isi otomatis dari Beranda (?tinggi=..&berat=..)
-  const params = new URLSearchParams(location.search);
-  if (params.get("tinggi")) heightEl.value = params.get("tinggi");
-  if (params.get("berat")) weightEl.value = params.get("berat");
-  updatePreview();
+  /* ---------- Baris probabilitas untuk 1 model ---------- */
+  function renderProbRows(probMap, winnerLabel) {
+    const sorted = [...CLASS_LABELS].sort((a, b) => (probMap[b] ?? 0) - (probMap[a] ?? 0));
 
+    return sorted
+      .map((label) => {
+        const pct = probMap[label] ?? 0;
+        const meta = META[label];
+        const isWinner = label === winnerLabel;
+        return `
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span>
+                <i class="bi ${meta.icon} me-1" style="color:${meta.color}" aria-hidden="true"></i>
+                <b>${escapeHtml(label)}</b>
+              </span>
+              <b style="color:${meta.color}">${fmt(pct, 2)}%</b>
+            </div>
+            <div class="progress" style="height:10px;">
+              <div class="progress-bar" role="progressbar"
+                   style="width:${pct}%; background:${meta.color};"
+                   aria-valuenow="${fmt(pct, 1)}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>`;
+      })
+      .join("");
+  }
 
-  // Isi form dengan data contoh supaya fitur bisa dicoba cepat
-  document.getElementById("fillSample").addEventListener("click", () => {
-    form.age.value = 28; form.gender.value = "Female"; form.height.value = 162; form.weight.value = 58; form.activity.value = "3";
-    form.classList.remove("was-validated");
-    SL.clearFieldErrors(form);
-    updatePreview();
-    toast("Data contoh terisi. Klik Klasifikasi untuk melihat hasil.", "info");
-  });
+  /* ---------- Kartu probabilitas untuk 1 model ---------- */
+  function renderModelCard(title, icon, probMap, winnerLabel, subtitle) {
+    return `
+      <div class="sl-card mt-3">
+        <div class="sl-card-head">
+          <i class="bi ${icon}" aria-hidden="true"></i> ${title}
+        </div>
+        <div class="sl-card-body">
+          ${subtitle ? `<p class="small text-muted mb-3">${subtitle}</p>` : ""}
+          ${renderProbRows(probMap, winnerLabel)}
+        </div>
+      </div>`;
+  }
 
-  form.addEventListener("reset", () => {
-    form.classList.remove("was-validated");
-    SL.clearFieldErrors(form);
-    container.innerHTML = emptyHtml;
-    setTimeout(updatePreview);
-  });
+  /* ---------- Tabel perbandingan ---------- */
+  function renderCompareTable(lgbm, mlp, ensemble, winnerLabel) {
+    const rows = CLASS_LABELS.map((label) => {
+      const isWinner = label === winnerLabel;
+      return `
+        <tr class="${isWinner ? "table-success fw-semibold" : ""}">
+          <td>
+            <i class="bi ${META[label].icon} me-1" style="color:${META[label].color}" aria-hidden="true"></i>
+            ${escapeHtml(label)}
+          </td>
+          <td class="text-end">${fmt(lgbm[label], 2)}%</td>
+          <td class="text-end">${fmt(mlp[label], 2)}%</td>
+          <td class="text-end"><b>${fmt(ensemble[label], 2)}%</b></td>
+        </tr>`;
+    }).join("");
 
-  /* ---------- Loading ---------- */
-  function showLoading(on) {
-    form.hidden = on;
-    loading.classList.toggle("active", on);
-    progress.style.width = on ? "0%" : "100%";
-    if (on) {
-      [25, 55, 85].forEach((p, i) => setTimeout(() => { progress.style.width = p + "%"; }, (i + 1) * 350));
+    return `
+      <div class="sl-card mt-3">
+        <div class="sl-card-head">
+          <i class="bi bi-table" aria-hidden="true"></i> Perbandingan Model
+        </div>
+        <div class="sl-card-body">
+          <p class="small text-muted mb-3">
+            Ensemble = weighted average <b>0.5 × LightGBM + 0.5 × MLP</b>.
+            Baris hijau menandai kategori terpilih.
+          </p>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Kelas Target</th>
+                  <th scope="col" class="text-end">LightGBM</th>
+                  <th scope="col" class="text-end">MLP</th>
+                  <th scope="col" class="text-end">Ensemble</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ---------- Render hasil lengkap + feedback ---------- */
+  function renderResult(apiData) {
+    const { ensemble, lgbm, mlp, winnerLabel, confidence, hasPerModel } = normalize(apiData);
+    const meta = META[winnerLabel];
+    const idPrediction = apiData.id_prediction;
+
+    const mainCard = `
+      <div class="sl-card mt-3" style="border-left:6px solid ${meta.color};">
+        <div class="sl-card-body text-center">
+          <i class="bi ${meta.icon} fs-1" style="color:${meta.color};" aria-hidden="true"></i>
+          <h2 class="h4 mt-2 mb-1">${escapeHtml(winnerLabel)}</h2>
+          <p class="mb-0 text-muted">
+            Kategori terpilih · keyakinan ensemble <b>${fmt(confidence, 2)}%</b>
+          </p>
+        </div>
+      </div>`;
+
+    const cards = hasPerModel
+      ? [
+          renderModelCard("LightGBM", "bi-lightning-charge-fill", lgbm, winnerLabel,
+            "Probabilitas dari model LightGBM (50% bobot ensemble)."),
+          renderModelCard("MLP (Multi-Layer Perceptron)", "bi-diagram-3-fill", mlp, winnerLabel,
+            "Probabilitas dari model MLP (50% bobot ensemble)."),
+          renderModelCard("Ensemble (0.5 × LightGBM + 0.5 × MLP)", "bi-pie-chart-fill", ensemble, winnerLabel,
+            "Hasil gabungan — inilah prediksi akhir yang dipakai."),
+        ].join("")
+      : renderModelCard("Probabilitas 4 Kategori", "bi-pie-chart-fill", ensemble, winnerLabel,
+          "Hasil dari weighted average 0.5 × LightGBM + 0.5 × MLP.");
+
+    const compareTable = hasPerModel
+      ? renderCompareTable(lgbm, mlp, ensemble, winnerLabel)
+      : "";
+
+    const recommendation = `
+      <div class="sl-card mt-3">
+        <div class="sl-card-head">
+          <i class="bi bi-lightbulb-fill" aria-hidden="true"></i> Rekomendasi
+        </div>
+        <div class="sl-card-body">
+          <p class="mb-0">${escapeHtml(RECOMMENDATIONS[winnerLabel] ?? "")}</p>
+        </div>
+      </div>`;
+
+    const feedbackCard = idPrediction ? `
+      <div class="sl-card mt-3">
+        <div class="sl-card-head">
+          <i class="bi bi-chat-dots-fill" aria-hidden="true"></i> Apakah hasil ini benar?
+        </div>
+        <div class="sl-card-body" id="feedbackBox">
+          <p class="small text-muted mb-3">Umpan balik Anda membantu kami meningkatkan akurasi model.</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-success" data-correct="true">
+              <i class="bi bi-hand-thumbs-up-fill me-1" aria-hidden="true"></i> Ya, Benar
+            </button>
+            <button type="button" class="btn btn-outline-danger" data-correct="false">
+              <i class="bi bi-hand-thumbs-down-fill me-1" aria-hidden="true"></i> Tidak, Salah
+            </button>
+          </div>
+        </div>
+      </div>` : "";
+
+    const disclaimer = `
+      <p class="small text-muted text-center mt-3 mb-0">
+        Hasil bersifat indikatif, bukan diagnosis medis.
+      </p>`;
+
+    container.innerHTML =
+      mainCard + cards + compareTable + recommendation + feedbackCard + disclaimer;
+
+    // --- Wire feedback buttons ---
+    if (idPrediction) {
+      container.querySelectorAll("#feedbackBox [data-correct]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const isAccurate = btn.dataset.correct === "true";
+          // Disable kedua tombol
+          container.querySelectorAll("#feedbackBox [data-correct]").forEach((b) => (b.disabled = true));
+
+          try {
+            const base = (window.SL_CONFIG?.ML_API_BASE || "").replace(/\/$/, "");
+            const res = await fetch(`${base}/feedback`, {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
+              body: JSON.stringify({
+                id_prediction: idPrediction,
+                is_accurate: isAccurate,
+              }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+            const box = document.getElementById("feedbackBox");
+            if (box) {
+              box.innerHTML = `
+                <div class="alert alert-success mb-0 d-flex align-items-center gap-2" role="alert">
+                  <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                  <span>Terima kasih! Umpan balik Anda sudah tersimpan.</span>
+                </div>`;
+            }
+          } catch (err) {
+            container.querySelectorAll("#feedbackBox [data-correct]").forEach((b) => (b.disabled = false));
+            alert("Gagal menyimpan feedback: " + err.message);
+          }
+        });
+      });
     }
   }
 
-  function showError(err) {
+  /* ---------- Loading / Error ---------- */
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on
+      ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Menghitung...`
+      : `<i class="bi bi-search me-1" aria-hidden="true"></i> Klasifikasi`;
+  }
+
+  function showError(msg) {
     container.innerHTML = `
       <div class="sl-card mt-3"><div class="sl-card-body text-center">
-        <i class="bi bi-exclamation-triangle-fill fs-1 text-warning"></i>
+        <i class="bi bi-exclamation-triangle-fill fs-1 text-warning" aria-hidden="true"></i>
         <h2 class="h5 mt-2">Klasifikasi belum berhasil</h2>
-        <p class="text-muted mb-0">${escapeHtml(err.message)}</p>
+        <p class="text-muted mb-0">${escapeHtml(msg)}</p>
       </div></div>`;
   }
 
-  /* ---------- Render hasil (gaya kartu hasil asli) ---------- */
-  function confidenceNote(pct) {
-    if (pct >= 80) return "Model ensemble sangat yakin dengan hasil ini.";
-    if (pct >= 60) return "Model cukup yakin, tetapi ada kemungkinan kategori lain. Lihat probabilitas di bawah.";
-    return "Keyakinan rendah: hasil dekat dengan kategori lain. Anggap sebagai perkiraan kasar.";
-  }
-
-  function renderResult(r) {
-    const key = r.category.key, meta = CATEGORIES[key];
-    const order = [...CATEGORY_KEYS].sort((a, b) => r.probabilities[b] - r.probabilities[a]);
-    const C = 2 * Math.PI * 45;
-
-    const probRows = order.map((k) => {
-      const m = CATEGORIES[k], win = k === key;
-      return `
-        <div class="prob-row">
-          <div class="prob-icon ${m.grad}"><i class="bi ${m.icon}"></i></div>
-          <div class="prob-info">
-            <div class="name">${escapeHtml(m.label)} ${win ? '<span class="chip-win">Terpilih</span>' : ""}</div>
-            <div class="bar-wrap"><div class="fill" data-w="${r.probabilities[k]}" style="background:${m.color};"></div></div>
-          </div>
-          <div class="prob-pct ${win ? "winner" : ""}" style="color:${m.color};">${fmt(r.probabilities[k])}%</div>
-        </div>`;
-    }).join("");
-
-    const modelRows = CATEGORY_KEYS.map((k) => `
-      <tr class="${k === key ? "best" : ""}"><td>${escapeHtml(CATEGORIES[k].name)}</td>
-      <td>${fmt(r.models.lightgbm[k])}%</td><td>${fmt(r.models.mlp[k])}%</td><td>${fmt(r.probabilities[k])}%</td></tr>`).join("");
-
-    const warnings = r.warnings.length
-      ? `<div class="alert alert-warning mt-3 mb-0" role="alert"><b>Perhatikan:</b><ul class="mb-0 ps-3">${r.warnings.map((w) => `<li>${escapeHtml(w)}</li>`).join("")}</ul></div>` : "";
-
-    container.innerHTML = `
-      <div class="result-card ${meta.cls}">
-        <i class="bi ${meta.icon} result-icon" aria-hidden="true"></i>
-        <p class="result-label">Hasil klasifikasi · BMI ${fmt(r.bmi, 1)}</p>
-        <div class="result-cat" id="resultTitle" tabindex="-1">${escapeHtml(meta.label)}</div>
-        <div class="confidence-wrap mt-3">
-          <div class="confidence-ring" role="img" aria-label="Keyakinan ${fmt(r.confidence)} persen">
-            <svg width="110" height="110" aria-hidden="true">
-              <circle cx="55" cy="55" r="45" stroke="rgba(255,255,255,0.3)" stroke-width="8" fill="none"/>
-              <circle class="bar" cx="55" cy="55" r="45" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"
-                stroke-dasharray="${C}" stroke-dashoffset="${C}" data-target="${C * (1 - r.confidence / 100)}"/>
-            </svg>
-            <div class="value">${fmt(r.confidence)}%<small>Keyakinan</small></div>
-          </div>
-          <div class="text-start" style="max-width:240px;">
-            <div style="font-size:13px; opacity:.95;"><b>Tingkat Keyakinan Ensemble</b><br><span style="opacity:.9;">${confidenceNote(r.confidence)}</span></div>
-          </div>
-        </div>
-      </div>
-      ${warnings}
-
-      <div class="sl-card mt-3"><div class="sl-card-body">
-        <h2 class="h6 fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary"></i> Probabilitas 4 Output Kategori</h2>
-        <p class="small text-muted mb-3">Hasil dari <b>ensemble 0.5 × LightGBM + 0.5 × MLP</b>. Setiap bar menunjukkan tingkat probabilitas model terhadap kategori tersebut.</p>
-        ${probRows}
-        <button class="btn btn-sm btn-outline-primary mt-3 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#modelDetail" aria-expanded="false">
-          <i class="bi bi-diagram-3"></i> Bandingkan kedua model</button>
-        <div class="collapse mt-3" id="modelDetail">
-          <div class="table-responsive"><table class="table table-sm model-table mb-2">
-            <thead><tr><th>Kategori</th><th>LightGBM</th><th>MLP</th><th>Ensemble</th></tr></thead><tbody>${modelRows}</tbody></table></div>
-          <p class="small text-muted mb-0">Bila kedua model sepakat, hasil lebih meyakinkan. Bila berbeda jauh, ensemble mencari jalan tengah.</p>
-        </div>
-      </div></div>
-
-      <div class="sl-card mt-3"><div class="sl-card-body">
-        <h2 class="h6 fw-bold"><i class="bi bi-lightbulb-fill text-warning"></i> Rekomendasi</h2>
-        <p class="mb-0 small">${escapeHtml(r.recommendation)}</p>
-      </div></div>
-
-      <div class="sl-card mt-3"><div class="sl-card-body">
-        <div class="feedback-box" id="feedbackBox">
-          <h2 class="h6 fw-bold mb-2"><i class="bi bi-chat-dots-fill"></i> Apakah hasil ini benar?</h2>
-          <p class="small text-muted mb-2">Umpan balik Anda membantu kami meningkatkan akurasi model.</p>
-          <button class="btn-fb btn-fb-yes" type="button" data-correct="true"><i class="bi bi-hand-thumbs-up-fill"></i> Ya, Benar</button>
-          <button class="btn-fb btn-fb-no" type="button" data-correct="false"><i class="bi bi-hand-thumbs-down-fill"></i> Tidak, Salah</button>
-        </div>
-        <p class="small text-muted text-center mt-3 mb-0">Tersimpan otomatis di <a href="${SL.PAGES.riwayat}" class="fw-semibold">Riwayat</a>. Hasil bukan diagnosis medis.</p>
-      </div></div>`;
-
-    // Animasi cincin & bar setelah elemen masuk DOM.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      container.querySelectorAll(".bar-wrap .fill").forEach((el) => (el.style.width = el.dataset.w + "%"));
-      const ring = container.querySelector(".confidence-ring .bar");
-      ring.style.strokeDashoffset = ring.dataset.target;
-    }));
-
-    container.querySelectorAll("#feedbackBox [data-correct]").forEach((btn) =>
-      btn.addEventListener("click", async () => {
-        const ok = btn.dataset.correct === "true";
-        try {
-          await api("/api/feedback", { method: "POST", body: { classification_id: r.id, is_correct: ok } });
-          document.getElementById("feedbackBox").innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Terima kasih, umpan balik Anda tersimpan.`;
-          toast(ok ? "Terima kasih! Umpan balik Anda sangat berarti. 👍" : "Terima kasih! Kami akan terus meningkatkan model. 🙏", ok ? "success" : "info");
-        } catch (err) { toast(err.message, "danger"); }
-      }));
-
-    container.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-    document.getElementById("resultTitle").focus({ preventScroll: true });
-  }
-
-  /* ---------- Kirim form ---------- */
+  /* ---------- Submit ---------- */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    SL.clearFieldErrors(form);
+    form.classList.add("was-validated");
+
     if (!form.checkValidity()) {
-      form.classList.add("was-validated");
       form.querySelector(":invalid")?.focus();
       return;
     }
-    const d = new FormData(form);
-    const payload = { age: d.get("age"), gender: d.get("gender"), height: d.get("height"), weight: d.get("weight"), activity: d.get("activity") };
 
-    setLoading(submitBtn, true, "Menghitung...");
-    showLoading(true);
+    const d = new FormData(form);
+    const payload = {
+      Age: Number(d.get("age")),
+      Gender_Encoded: d.get("gender") === "Male" ? 1 : 0,
+      Height_winsorized: Number(d.get("height")),
+      Weight_winsorized: Number(d.get("weight")),
+      PhysicalActivityLevel: Number(d.get("activity")),
+    };
+
+    setLoading(true);
     try {
-      const [result] = await Promise.all([api("/api/predict", { method: "POST", body: payload }), wait(1300)]);
-      showLoading(false);
-      renderResult(result);
-      toast("Klasifikasi selesai dan tersimpan di Riwayat.");
+      const base = (window.SL_CONFIG?.ML_API_BASE || "").replace(/\/$/, "");
+      const res = await fetch(`${base}/predict`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      renderResult(data);
+      container.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (err) {
-      showLoading(false);
-      showError(err);
-      SL.applyFieldErrors(form, err.fields);
-      form.classList.add("was-validated");
+      showError(err.message);
     } finally {
-      setLoading(submitBtn, false);
+      setLoading(false);
     }
+  });
+
+  /* ---------- Reset ---------- */
+  form.addEventListener("reset", () => {
+    form.classList.remove("was-validated");
+    container.innerHTML = emptyHtml;
   });
 })();

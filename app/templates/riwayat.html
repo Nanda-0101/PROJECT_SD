@@ -1,5 +1,4 @@
 <!doctype html>
-<!-- Template Flask: kode dalam tanda kurung kurawal ganda diisi server (Jinja2) -->
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -7,56 +6,59 @@
     <meta name="theme-color" content="#eef2f9" />
     <title>Riwayat · Sakit-Learn</title>
 
-    <!-- Font Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Pustaka pihak ketiga -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 
-    <!-- CSS proyek -->
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/riwayat.css') }}" rel="stylesheet" />
-    <!-- Poles tampilan bersama, dimuat paling akhir supaya tidak tertimpa -->
     <link href="{{ url_for('static', filename='css/efek.css') }}" rel="stylesheet" />
   </head>
 
-  <!-- data-protected: layout.js mengalihkan ke halaman Masuk jika pengguna belum login -->
-  <body data-page="riwayat" data-protected>
+  <body data-page="riwayat">
     <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
-    <div id="site-navbar"></div>
+
+    <div id="site-navbar">
+      {% include 'components/navbar.html' %}
+    </div>
 
     <main class="container pb-5" id="main">
-      <!-- Keterangan yang hanya muncul saat dicetak (lihat @media print di riwayat.css) -->
+      <!-- Keterangan yang hanya muncul saat dicetak -->
       <p class="print-only" id="printMeta"></p>
-      <h1 class="page-title"><i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat Klasifikasi</h1>
 
-      <!-- Pesan error pemuatan data (disembunyikan sampai dibutuhkan) -->
-      <div id="loadError" class="alert alert-warning d-none" role="alert"></div>
+      <h1 class="page-title">
+        <i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat Klasifikasi
+      </h1>
 
-      <!-- ===== FILTER: pencarian, kategori, urutan, ekspor, hapus semua ===== -->
+      <!-- Banner placeholder -->
+      <div class="alert alert-info d-flex align-items-center gap-2 mb-3" role="note">
+        <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
+        <div>
+          <b>Fitur riwayat belum aktif.</b>
+          Halaman ini menampilkan struktur antarmuka. Data akan terisi otomatis setelah backend
+          <code>/api/history</code> diaktifkan pada rilis berikutnya.
+        </div>
+      </div>
+
+      <!-- ===== FILTER ===== -->
       <section class="sl-card mb-3" aria-label="Filter riwayat">
         <div class="sl-card-body py-3">
           <div class="row g-2 align-items-center">
-            <!-- Kolom pencarian -->
             <div class="col-lg-5">
-              <label class="visually-hidden" for="fSearch">Cari</label
-              ><!-- label tersembunyi: tetap terbaca pembaca layar -->
+              <label class="visually-hidden" for="fSearch">Cari</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
-                <input type="search" class="form-control" id="fSearch" placeholder="Cari kategori atau tanggal..." />
+                <input type="search" class="form-control" id="fSearch"
+                       placeholder="Cari kategori atau tanggal..." disabled />
               </div>
             </div>
 
-            <!-- Dropdown kategori. value dikirim ke server sebagai parameter "category" -->
             <div class="col-6 col-lg-3">
               <label class="visually-hidden" for="fCategory">Kategori</label>
-              <select class="form-select" id="fCategory">
+              <select class="form-select" id="fCategory" disabled>
                 <option value="">Semua Kategori</option>
                 <option value="normal">Normal weight</option>
                 <option value="under">Underweight</option>
@@ -65,34 +67,22 @@
               </select>
             </div>
 
-            <!-- Dropdown urutan: desc = terbaru dulu, asc = terlama dulu -->
             <div class="col-6 col-lg-2">
               <label class="visually-hidden" for="fSort">Urutan</label>
-              <select class="form-select" id="fSort">
+              <select class="form-select" id="fSort" disabled>
                 <option value="desc">Terbaru</option>
                 <option value="asc">Terlama</option>
               </select>
             </div>
 
-            <!-- Tombol ikon: ekspor CSV & hapus semua. title = tooltip, aria-label = teks untuk pembaca layar -->
             <div class="col-lg-2">
               <div class="d-flex gap-2">
-                <button
-                  class="btn btn-outline-success flex-fill"
-                  id="btnExport"
-                  type="button"
-                  title="Export CSV"
-                  aria-label="Export CSV"
-                >
+                <button class="btn btn-outline-success flex-fill" id="btnExport" type="button"
+                        title="Export CSV" aria-label="Export CSV" disabled>
                   <i class="bi bi-filetype-csv" aria-hidden="true"></i>
                 </button>
-                <button
-                  class="btn btn-outline-danger flex-fill"
-                  id="btnClearAll"
-                  type="button"
-                  title="Hapus Semua"
-                  aria-label="Hapus semua riwayat"
-                >
+                <button class="btn btn-outline-danger flex-fill" id="btnClearAll" type="button"
+                        title="Hapus Semua" aria-label="Hapus semua riwayat" disabled>
                   <i class="bi bi-trash" aria-hidden="true"></i>
                 </button>
               </div>
@@ -101,70 +91,63 @@
         </div>
       </section>
 
-      <!-- Grafik tren BMI, digambar riwayat.js sebagai SVG. Klik satu titik untuk membuka detail tesnya -->
-      <section class="sl-card trend-card mb-3" aria-label="Tren BMI">
-        <div class="sl-card-head"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Tren BMI Anda</div>
-        <div class="sl-card-body">
-          <div id="trendBox"></div>
-          <p class="small text-muted mt-2 mb-0" id="trendNote"></p>
-        </div>
-      </section>
+      <!-- Chip kategori (placeholder, non-klik) -->
+      <div class="chip-row mb-3" id="catChips" role="group" aria-label="Filter cepat kategori">
+        <button type="button" class="chip active" data-key="" style="--cat:#697083" disabled>
+          <span class="dot"></span>Semua<span class="num">0</span>
+        </button>
+        <button type="button" class="chip" data-key="normal" style="--cat:#16a34a" disabled>
+          <span class="dot"></span>Normal weight<span class="num">0</span>
+        </button>
+        <button type="button" class="chip" data-key="under" style="--cat:#06b6d4" disabled>
+          <span class="dot"></span>Underweight<span class="num">0</span>
+        </button>
+        <button type="button" class="chip" data-key="over" style="--cat:#f5a700" disabled>
+          <span class="dot"></span>Overweight<span class="num">0</span>
+        </button>
+        <button type="button" class="chip" data-key="obese" style="--cat:#e5384f" disabled>
+          <span class="dot"></span>Obese<span class="num">0</span>
+        </button>
+      </div>
 
-      <!-- Pita pencapaian, dihitung riwayat.js dari data yang tampil -->
-      <div class="chip-row mb-3" id="achRow" aria-label="Pencapaian"></div>
-
-      <!-- Chip kategori dengan jumlahnya, dibuat riwayat.js. Klik chip = filter kategori -->
-      <div class="chip-row mb-3" id="catChips" role="group" aria-label="Filter cepat kategori"></div>
-
-      <!-- Toolbar tambahan. Kiri untuk rentang waktu, kanan untuk ganti tampilan tabel atau kartu -->
+      <!-- Toolbar: rentang + tombol cetak + toggle tampilan -->
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div class="d-flex align-items-center gap-2">
-          <label class="small text-muted" for="fRange"><i class="bi bi-calendar3" aria-hidden="true"></i> Rentang</label>
-          <select class="form-select form-select-sm w-auto" id="fRange">
+          <label class="small text-muted" for="fRange">
+            <i class="bi bi-calendar3" aria-hidden="true"></i> Rentang
+          </label>
+          <select class="form-select form-select-sm w-auto" id="fRange" disabled>
             <option value="0">Semua waktu</option>
             <option value="7">7 hari terakhir</option>
             <option value="30">30 hari terakhir</option>
           </select>
         </div>
+
         <button class="btn btn-sm btn-outline-secondary ms-auto me-2" id="btnPrint" type="button">
           <i class="bi bi-printer" aria-hidden="true"></i> Cetak / PDF
         </button>
+
         <div class="view-toggle" role="group" aria-label="Pilih tampilan">
-          <button type="button" id="btnViewTable" aria-pressed="true"><i class="bi bi-table" aria-hidden="true"></i> Tabel</button>
-          <button type="button" id="btnViewCard" aria-pressed="false"><i class="bi bi-grid-3x2-gap" aria-hidden="true"></i> Kartu</button>
+          <button type="button" id="btnViewTable" aria-pressed="true" disabled>
+            <i class="bi bi-table" aria-hidden="true"></i> Tabel
+          </button>
+          <button type="button" id="btnViewCard" aria-pressed="false" disabled>
+            <i class="bi bi-grid-3x2-gap" aria-hidden="true"></i> Kartu
+          </button>
         </div>
       </div>
 
-      <!-- ===== TABEL RIWAYAT ===== -->
+      <!-- ===== TABEL RIWAYAT (kosong, tanpa kolom BMI) ===== -->
       <section class="sl-card" aria-label="Daftar riwayat">
         <div class="sl-card-body">
-          <!-- Panel perbandingan dua tes, isinya dibuat riwayat.js saat tombol Bandingkan ditekan -->
-          <div class="compare-panel" id="comparePanel" hidden></div>
-          <!-- Bilah aksi massal, muncul kalau ada baris yang dicentang -->
-          <div class="bulk-bar" id="bulkBar" hidden>
-            <span><b id="bulkCount">0</b> riwayat dipilih</span>
-            <span class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-secondary" id="bulkClear" type="button">Batal</button>
-              <!-- Tombol ini hanya muncul kalau tepat dua riwayat dicentang -->
-              <button class="btn btn-sm btn-sl" id="bulkCompare" type="button" hidden>
-                <i class="bi bi-arrow-left-right" aria-hidden="true"></i> Bandingkan
-              </button>
-              <button class="btn btn-sm btn-danger" id="bulkDelete" type="button">
-                <i class="bi bi-trash" aria-hidden="true"></i> Hapus terpilih
-              </button>
-            </span>
-          </div>
           <div class="table-responsive" id="tableWrap">
-            <!-- bisa digeser menyamping di layar kecil -->
             <table class="table table-hover align-middle mb-0">
-              <caption class="visually-hidden">
-                Riwayat klasifikasi status berat badan
-              </caption>
+              <caption class="visually-hidden">Riwayat klasifikasi status berat badan</caption>
               <thead>
                 <tr>
                   <th scope="col">
-                    <!-- kotak centang untuk memilih semua baris di halaman ini -->
-                    <input type="checkbox" class="form-check-input" id="selAll" aria-label="Pilih semua di halaman ini" /> #
+                    <input type="checkbox" class="form-check-input" id="selAll"
+                           aria-label="Pilih semua di halaman ini" disabled /> #
                   </th>
                   <th scope="col">Tanggal</th>
                   <th scope="col">Usia</th>
@@ -173,107 +156,82 @@
                   <th scope="col">Berat</th>
                   <th scope="col">Aktivitas</th>
                   <th scope="col">Kategori</th>
+                  <th scope="col">Keyakinan</th>
                   <th scope="col">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="historyBody"></tbody>
-              <!-- baris diisi oleh riwayat.js -->
+              <tbody id="historyBody">
+                <!-- Placeholder: tidak ada data -->
+                <tr>
+                  <td colspan="10">
+                    <div class="empty-state text-center py-5">
+                      <i class="bi bi-inbox fs-1 text-muted" aria-hidden="true"></i>
+                      <p class="mt-2 mb-3 text-muted">Belum ada riwayat klasifikasi</p>
+                      <a href="{{ url_for('main.beranda') }}" class="btn btn-sl btn-sm">
+                        <i class="bi bi-play-circle-fill me-1" aria-hidden="true"></i> Mulai Klasifikasi
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
-          <!-- Tampilan kartu. Disembunyikan dulu, diisi riwayat.js saat tombol Kartu ditekan -->
+
+          <!-- Tampilan kartu (placeholder) -->
           <div class="row g-3" id="cardList" hidden></div>
+
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2">
-            <div class="small text-muted" id="resultCount" aria-live="polite"></div>
-            <!-- Tombol halaman, dibuat riwayat.js bila data lebih dari satu halaman -->
-            <nav aria-label="Halaman riwayat"><ul class="pagination pagination-sm mb-0" id="pager"></ul></nav>
+            <div class="small text-muted" id="resultCount" aria-live="polite">0 hasil</div>
+            <nav aria-label="Halaman riwayat">
+              <ul class="pagination pagination-sm mb-0" id="pager"></ul>
+            </nav>
           </div>
-          <!-- "N hasil" -->
         </div>
       </section>
 
-      <!-- ===== VISUALISASI: 3 grafik + ringkasan ===== -->
+      <!-- ===== VISUALISASI: TANPA chart, hanya ringkasan statistik ===== -->
       <h2 class="section-title">
-        <i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i> Visualisasi Riwayat Klasifikasi
+        <i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i> Ringkasan Riwayat
       </h2>
 
-      <div class="row g-3 mb-3">
-        <!-- Grafik donat: distribusi kategori -->
-        <div class="col-lg-5">
-          <div class="sl-card h-100">
-            <div class="sl-card-head"><i class="bi bi-pie-chart-fill" aria-hidden="true"></i> Distribusi Kategori</div>
-            <div class="sl-card-body">
-              <div class="chart-box">
-                <canvas id="pieChart" role="img" aria-label="Diagram donat distribusi kategori" hidden></canvas>
-                <div class="chart-empty">
-                  <i class="bi bi-pie-chart" aria-hidden="true"></i><span>Belum ada data</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Grafik batang: tingkat kepercayaan -->
-        <div class="col-lg-7">
+      <div class="row g-3">
+        <div class="col-12">
           <div class="sl-card h-100">
             <div class="sl-card-head">
-              <i class="bi bi-bar-chart-fill" aria-hidden="true"></i> Tingkat Kepercayaan per Klasifikasi
+              <i class="bi bi-speedometer2" aria-hidden="true"></i> Ringkasan Statistik
             </div>
             <div class="sl-card-body">
-              <div class="chart-box">
-                <canvas id="barChart" role="img" aria-label="Diagram batang keyakinan" hidden></canvas>
-                <div class="chart-empty">
-                  <i class="bi bi-bar-chart" aria-hidden="true"></i><span>Belum ada data</span>
-                </div>
+              <div class="sum-row">
+                <span class="text-muted">Total Klasifikasi</span><b id="riwayatTotal">0</b>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-3">
-        <!-- Grafik garis: tren harian -->
-        <div class="col-lg-8">
-          <div class="sl-card h-100">
-            <div class="sl-card-head"><i class="bi bi-graph-up" aria-hidden="true"></i> Tren Klasifikasi Harian</div>
-            <div class="sl-card-body">
-              <div class="chart-box short">
-                <canvas id="lineChart" role="img" aria-label="Grafik garis jumlah klasifikasi harian" hidden></canvas>
-                <div class="chart-empty">
-                  <i class="bi bi-graph-up" aria-hidden="true"></i><span>Belum ada data</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Ringkasan angka -->
-        <div class="col-lg-4">
-          <div class="sl-card h-100">
-            <div class="sl-card-head"><i class="bi bi-speedometer2" aria-hidden="true"></i> Ringkasan Statistik</div>
-            <div class="sl-card-body">
-              <div class="sum-row"><span class="text-muted">Total Klasifikasi</span><b id="riwayatTotal">0</b></div>
               <div class="sum-row">
                 <span class="text-muted">Rata-rata Keyakinan</span><b id="riwayatAvgConf">0%</b>
               </div>
               <div class="sum-row">
                 <span class="text-muted">Keyakinan Tertinggi</span><b id="riwayatMaxConf">0%</b>
               </div>
-              <div class="sum-row"><span class="text-muted">Keyakinan Terendah</span><b id="riwayatMinConf">0%</b></div>
-              <div class="sum-row"><span class="text-muted">Kategori Terbanyak</span><b id="riwayatTopCat">—</b></div>
+              <div class="sum-row">
+                <span class="text-muted">Keyakinan Terendah</span><b id="riwayatMinConf">0%</b>
+              </div>
+              <div class="sum-row">
+                <span class="text-muted">Kategori Terbanyak</span><b id="riwayatTopCat">—</b>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <p class="small text-muted mt-3 mb-0">
+        <i class="bi bi-info-circle" aria-hidden="true"></i>
+        Statistik di atas akan terisi otomatis setelah backend <code>/api/history/stats</code> aktif.
+      </p>
     </main>
 
-    <div id="site-footer"></div>
+    <div id="site-footer">
+      {% include 'components/footer.html' %}
+    </div>
 
-    <!--
-      Modal (jendela pop-up) diletakkan DI LUAR <main>, langsung di bawah <body>.
-      Ini anjuran Bootstrap agar tidak tertimpa elemen lain (masalah tumpukan/z-index).
-    -->
-
-    <!-- Modal detail satu riwayat; isinya diisi riwayat.js -->
+    <!-- Modal detail: placeholder, kosong -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -283,37 +241,40 @@
             </h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
           </div>
-          <div class="modal-body" id="detailBody"></div>
+          <div class="modal-body" id="detailBody">
+            <p class="text-muted mb-0">Detail akan tersedia setelah backend aktif.</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal konfirmasi hapus (dipakai untuk "hapus satu" dan "hapus semua") -->
+    <!-- Modal konfirmasi hapus: placeholder -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
           <div class="modal-body p-4">
             <div class="confirm-icon"><i class="bi bi-trash3-fill" aria-hidden="true"></i></div>
             <h2 class="h5" id="confirmTitle">Hapus riwayat?</h2>
-            <p class="text-muted mb-4" id="confirmText"></p>
-            <!-- kalimat diisi JS sesuai yang dihapus -->
+            <p class="text-muted mb-4" id="confirmText">Fitur hapus belum aktif.</p>
             <div class="d-flex gap-2 justify-content-end">
               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-              <button type="button" class="btn btn-danger" id="confirmOk">Hapus</button>
+              <button type="button" class="btn btn-danger" id="confirmOk" disabled>Hapus</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Skrip: Chart.js dimuat sebelum riwayat.js karena riwayat.js memakai "Chart" -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/riwayat.js') }}"></script>
     <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
+
+    <script>
+      // Placeholder script: hanya tombol Cetak yang aktif (print bawaan browser).
+      // Tombol lain disabled sampai backend diaktifkan.
+      document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
+    </script>
   </body>
 </html>

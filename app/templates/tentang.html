@@ -4,18 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eef2f9">
-  <title>About · Sakit-Learn</title>
+  <title>Tentang · Sakit-Learn</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/tentang.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/efek.css') }}" rel="stylesheet">
 </head>
+
 <body data-page="tentang">
   <a class="visually-hidden-focusable skip-link" href="#main">Lewati ke konten</a>
-  <div id="site-navbar"></div>
+
+  <div id="site-navbar">
+    {% include 'components/navbar.html' %}
+  </div>
 
   <main class="container pb-5" id="main">
     <section class="about-hero glass">
@@ -25,40 +33,38 @@
     </section>
 
     <section class="sl-card mt-3">
-      <div class="sl-card-head"><i class="bi bi-info-circle-fill"></i> Tentang Aplikasi</div>
+      <div class="sl-card-head"><i class="bi bi-info-circle-fill" aria-hidden="true"></i> Tentang Aplikasi</div>
       <div class="sl-card-body">
-        <p><b>Sakit-Learn</b> adalah aplikasi berbasis web untuk membantu masyarakat memantau status berat badan secara mandiri. Aplikasi ini menggunakan <b>ensemble machine learning</b> yang menggabungkan dua model untuk menghasilkan prediksi yang lebih akurat.</p>
+        <p>
+          <b>Sakit-Learn</b> adalah aplikasi berbasis web untuk membantu masyarakat memantau status berat badan
+          secara mandiri. Aplikasi ini menggunakan <b>ensemble machine learning</b> yang menggabungkan dua model
+          untuk menghasilkan prediksi yang lebih akurat.
+        </p>
 
         <div class="model-info mt-4">
-          <div class="model-name"><i class="bi bi-cpu-fill"></i> Arsitektur Model Ensemble</div>
-          <p class="small text-muted mt-1 mb-3">Sistem menggunakan pendekatan <b>weighted average ensemble</b> dengan bobot seimbang:</p>
+          <div class="model-name"><i class="bi bi-cpu-fill" aria-hidden="true"></i> Arsitektur Model Ensemble</div>
+          <p class="small text-muted mt-1 mb-3">
+            Sistem menggunakan pendekatan <b>weighted average ensemble</b> dengan bobot seimbang:
+          </p>
           <div class="d-flex flex-wrap gap-2 mb-3">
-            <span class="weight-badge"><i class="bi bi-lightning-charge-fill"></i> LightGBM × <span id="wLgbm">0.5</span></span>
-            <span class="weight-badge"><i class="bi bi-diagram-3-fill"></i> MLP × <span id="wMlp">0.5</span></span>
+            <span class="weight-badge"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> LightGBM × 0.5</span>
+            <span class="weight-badge"><i class="bi bi-diagram-3-fill" aria-hidden="true"></i> MLP × 0.5</span>
           </div>
           <p class="small mb-0 lh-lg">
             <b>LightGBM</b> (Light Gradient Boosting Machine) — algoritma gradient boosting berbasis pohon keputusan yang cepat dan efisien.<br>
             <b>MLP</b> (Multi-Layer Perceptron) — jaringan saraf tiruan dengan beberapa hidden layer yang mampu menangkap pola non-linear.<br>
-            Hasil akhir = <b>(<span id="fLgbm">0.5</span> × probabilitas LightGBM) + (<span id="fMlp">0.5</span> × probabilitas MLP)</b> untuk setiap kategori.
+            Hasil akhir = <b>(0.5 × probabilitas LightGBM) + (0.5 × probabilitas MLP)</b> untuk setiap kategori.
           </p>
-        </div>
-
-        <h2 class="h6 fw-bold mt-4 mb-3"><i class="bi bi-graph-up text-primary"></i> Metrik Performa Model</h2>
-        <div class="row g-3">
-          <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="bi bi-bullseye"></i></div><div class="stat-value" id="mAcc">95%</div><div class="stat-label">Akurasi</div></div></div>
-          <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="bi bi-database"></i></div><div class="stat-value" id="mN">2,111</div><div class="stat-label">Data Latih</div></div></div>
-          <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="bi bi-diagram-3"></i></div><div class="stat-value">2</div><div class="stat-label">Model Ensemble</div></div></div>
-          <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="bi bi-speedometer"></i></div><div class="stat-value" id="mF1">0.95</div><div class="stat-label">F1-Score</div></div></div>
         </div>
       </div>
     </section>
 
     <section class="sl-card mt-3 disclaimer">
-      <div class="sl-card-head"><i class="bi bi-exclamation-triangle-fill"></i> Disclaimer &amp; Batasan Sistem</div>
+      <div class="sl-card-head"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Disclaimer &amp; Batasan Sistem</div>
       <div class="sl-card-body">
         <ul class="mb-0 ps-3">
           <li class="mb-2"><b>Hasil bersifat indikatif.</b> Sistem ini bukan pengganti diagnosis medis profesional.</li>
-          <li class="mb-2"><b>Data optimal:</b> <span id="rangeText">Usia 18–79 tahun, tinggi 136–201 cm, berat 26–119 kg, aktivitas 1–4.</span></li>
+          <li class="mb-2"><b>Data optimal:</b> Usia 18–79 tahun, tinggi 136–201 cm, berat 26–119 kg, aktivitas 1–4.</li>
           <li class="mb-2"><b>Model dapat salah.</b> AI dapat membuat kesalahan prediksi pada kasus ekstrem atau data di luar rentang pelatihan.</li>
           <li><b>Konsultasikan ke dokter</b> atau ahli gizi untuk diagnosis dan penanganan lebih lanjut.</li>
         </ul>
@@ -66,33 +72,67 @@
     </section>
 
     <section class="sl-card mt-3">
-      <div class="sl-card-head"><i class="bi bi-question-circle-fill"></i> FAQ</div>
+      <div class="sl-card-head"><i class="bi bi-question-circle-fill" aria-hidden="true"></i> FAQ</div>
       <div class="sl-card-body">
         <div class="accordion" id="faqAccordion">
           <div class="accordion-item">
-            <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">Bagaimana sistem mengklasifikasi status berat badan?</button></h3>
-            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Sistem menggunakan <b>ensemble LightGBM + MLP</b>. Setiap model menghasilkan probabilitas untuk 4 kategori, lalu digabung dengan bobot 0.5 : 0.5. Kategori dengan probabilitas tertinggi menjadi hasil akhir.</div></div>
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+                Bagaimana sistem mengklasifikasi status berat badan?
+              </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Sistem menggunakan <b>ensemble LightGBM + MLP</b>. Setiap model menghasilkan probabilitas untuk 4
+                kategori, lalu digabung dengan bobot 0.5 : 0.5. Kategori dengan probabilitas tertinggi menjadi
+                hasil akhir.
+              </div>
+            </div>
           </div>
+
           <div class="accordion-item">
-            <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">Apakah saya harus login untuk menggunakan klasifikasi?</button></h3>
-            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Ya. Untuk menggunakan fitur <b>Klasifikasi</b> dan menyimpan <b>Riwayat</b>, Anda perlu login atau sign up terlebih dahulu. Halaman <b>Beranda</b> dan <b>About</b> dapat diakses tanpa login.</div></div>
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                Apakah saya harus login untuk menggunakan klasifikasi?
+              </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Ya. Untuk menggunakan fitur <b>Klasifikasi</b> dan menyimpan <b>Riwayat</b>, Anda perlu login
+                terlebih dahulu. Halaman <b>Beranda</b> dan <b>Tentang</b> dapat diakses tanpa login.
+              </div>
+            </div>
           </div>
+
           <div class="accordion-item">
-            <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Apakah data saya aman?</button></h3>
-            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Ya. Data Anda diproses 100% di browser dan tidak dikirim ke server. Data hanya tersimpan di perangkat Anda dan hanya bisa diakses oleh akun Anda.</div></div>
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                Apakah data saya aman?
+              </button>
+            </h3>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Password Anda disimpan dalam bentuk hash di server. Data klasifikasi akan disimpan di database
+                dan hanya bisa diakses oleh akun Anda setelah fitur klasifikasi aktif.
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <div id="site-footer"></div>
+  <div id="site-footer">
+    {% include 'components/footer.html' %}
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/mock-api.js') }}"></script>
   <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
   <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/tentang.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
 </body>
 </html>
