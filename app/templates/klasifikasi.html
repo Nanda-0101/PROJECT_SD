@@ -23,105 +23,210 @@
 
   <main class="container pb-5" id="main">
     <h1 class="page-title">
-      <i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Klasifikasi Status Berat Badan
+      <i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Klasifikasi Status Obesitas
     </h1>
 
     <section class="sl-card">
       <div class="sl-card-head">
-        <i class="bi bi-clipboard-data-fill" aria-hidden="true"></i> Input Data Individu
+        <i class="bi bi-clipboard-data-fill" aria-hidden="true"></i> Input Data Individu (14 Fitur)
       </div>
       <div class="sl-card-body">
         <div class="note mb-4">
           <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
           <span>
-            Isi data dengan benar. Hasil akan menampilkan
+            Isi data sesuai kebiasaan harian. Hasil akan menampilkan
             <b>4 probabilitas output</b> dari ensemble LightGBM + MLP.
           </span>
         </div>
 
         <form id="classifyForm" novalidate>
-          <div class="row g-3">
-            <div class="col-md-6 field">
-              <label class="form-label" for="age">Usia (tahun)</label>
+          <!-- ===================== A. DATA DIRI ===================== -->
+          <h6 class="text-muted fw-bold mb-3"><i class="bi bi-person-vcard me-1"></i> Data Diri</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-4 field">
+              <label class="form-label" for="Sex">Jenis Kelamin</label>
               <div class="input-group has-validation">
-                <span class="input-group-text"><i class="bi bi-calendar" aria-hidden="true"></i></span>
-                <input type="number" class="form-control" id="age" name="age"
-                       min="1" max="120" step="1" placeholder="cth: 25"
+                <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                <select class="form-select" id="Sex" name="Sex" required>
+                  <option value="">Pilih...</option>
+                  <option value="1">Laki-laki</option>
+                  <option value="2">Perempuan</option>
+                </select>
+                <div class="invalid-feedback">Pilih jenis kelamin.</div>
+              </div>
+            </div>
+
+            <div class="col-md-4 field">
+              <label class="form-label" for="Age">Usia (tahun)</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                <input type="number" class="form-control" id="Age" name="Age"
+                       min="1" max="120" step="1" placeholder="cth: 30"
                        inputmode="numeric" required>
                 <div class="invalid-feedback">Isi usia 1-120 tahun.</div>
               </div>
             </div>
 
-            <div class="col-md-6 field">
-              <label class="form-label" for="gender">Gender</label>
+            <div class="col-md-4 field">
+              <label class="form-label" for="Height">Tinggi Badan (cm)</label>
               <div class="input-group has-validation">
-                <span class="input-group-text"><i class="bi bi-gender-ambiguous" aria-hidden="true"></i></span>
-                <select class="form-select" id="gender" name="gender" required>
-                  <option value="">Pilih...</option>
-                  <option value="Male">Laki-laki</option>
-                  <option value="Female">Perempuan</option>
-                </select>
-                <div class="invalid-feedback">Pilih gender.</div>
+                <span class="input-group-text"><i class="bi bi-arrows-vertical"></i></span>
+                <input type="number" class="form-control" id="Height" name="Height"
+                       min="100" max="220" step="1" placeholder="cth: 170"
+                       inputmode="numeric" required>
+                <div class="invalid-feedback">Isi tinggi 100-220 cm.</div>
               </div>
+            </div>
+          </div>
+
+          <!-- ===================== B. RIWAYAT KELUARGA & MAKAN ===================== -->
+          <h6 class="text-muted fw-bold mb-3"><i class="bi bi-egg-fried me-1"></i> Riwayat & Pola Makan</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 field">
+              <label class="form-label" for="Overweight_Obese_Family">Ada anggota keluarga overweight/obesitas?</label>
+              <select class="form-select" id="Overweight_Obese_Family" name="Overweight_Obese_Family" required>
+                <option value="">Pilih...</option>
+                <option value="1">Ya</option>
+                <option value="2">Tidak</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
             </div>
 
             <div class="col-md-6 field">
-              <label class="form-label" for="height">Tinggi Badan (cm)</label>
-              <div class="input-group has-validation">
-                <span class="input-group-text"><i class="bi bi-arrows-vertical" aria-hidden="true"></i></span>
-                <input type="number" class="form-control" id="height" name="height"
-                       min="50" max="250" step="0.1" placeholder="cth: 170"
-                       inputmode="decimal" required>
-                <div class="invalid-feedback">Isi tinggi 50-250 cm.</div>
-              </div>
+              <label class="form-label" for="Consumption_of_Fast_Food">Mengonsumsi fast food?</label>
+              <select class="form-select" id="Consumption_of_Fast_Food" name="Consumption_of_Fast_Food" required>
+                <option value="">Pilih...</option>
+                <option value="1">Ya</option>
+                <option value="2">Tidak</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
             </div>
 
             <div class="col-md-6 field">
-              <label class="form-label" for="weight">Berat Badan (kg)</label>
-              <div class="input-group has-validation">
-                <span class="input-group-text"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
-                <input type="number" class="form-control" id="weight" name="weight"
-                       min="10" max="300" step="0.1" placeholder="cth: 65"
-                       inputmode="decimal" required>
-                <div class="invalid-feedback">Isi berat 10-300 kg.</div>
-              </div>
+              <label class="form-label" for="Frequency_of_Consuming_Vegetables">Frekuensi makan sayur</label>
+              <select class="form-select" id="Frequency_of_Consuming_Vegetables" name="Frequency_of_Consuming_Vegetables" required>
+                <option value="">Pilih...</option>
+                <option value="1">Jarang</option>
+                <option value="2">Kadang-kadang</option>
+                <option value="3">Selalu</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Number_of_Main_Meals_Daily">Jumlah makan utama per hari</label>
+              <select class="form-select" id="Number_of_Main_Meals_Daily" name="Number_of_Main_Meals_Daily" required>
+                <option value="">Pilih...</option>
+                <option value="1">1-2 kali</option>
+                <option value="2">3 kali</option>
+                <option value="3">Lebih dari 3 kali</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Food_Intake_Between_Meals">Makan di antara waktu makan utama</label>
+              <select class="form-select" id="Food_Intake_Between_Meals" name="Food_Intake_Between_Meals" required>
+                <option value="">Pilih...</option>
+                <option value="1">Jarang</option>
+                <option value="2">Kadang-kadang</option>
+                <option value="3">Biasanya</option>
+                <option value="4">Selalu</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Liquid_Intake_Daily">Asupan cairan per hari</label>
+              <select class="form-select" id="Liquid_Intake_Daily" name="Liquid_Intake_Daily" required>
+                <option value="">Pilih...</option>
+                <option value="1">Kurang dari 1 liter</option>
+                <option value="2">1-2 liter</option>
+                <option value="3">Lebih dari 2 liter</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Calculation_of_Calorie_Intake">Menghitung asupan kalori?</label>
+              <select class="form-select" id="Calculation_of_Calorie_Intake" name="Calculation_of_Calorie_Intake" required>
+                <option value="">Pilih...</option>
+                <option value="1">Ya</option>
+                <option value="2">Tidak</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Smoking">Merokok?</label>
+              <select class="form-select" id="Smoking" name="Smoking" required>
+                <option value="">Pilih...</option>
+                <option value="1">Ya</option>
+                <option value="2">Tidak</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+          </div>
+
+          <!-- ===================== C. AKTIVITAS ===================== -->
+          <h6 class="text-muted fw-bold mb-3"><i class="bi bi-activity me-1"></i> Aktivitas & Gaya Hidup</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 field">
+              <label class="form-label" for="Physical_Exercise">Frekuensi olahraga</label>
+              <select class="form-select" id="Physical_Exercise" name="Physical_Exercise" required>
+                <option value="">Pilih...</option>
+                <option value="1">Tidak pernah</option>
+                <option value="2">1-2 hari/minggu</option>
+                <option value="3">3-4 hari/minggu</option>
+                <option value="4">5-6 hari/minggu</option>
+                <option value="5">Lebih dari 6 hari/minggu</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
+            </div>
+
+            <div class="col-md-6 field">
+              <label class="form-label" for="Schedule_Dedicated_to_Technology">Waktu untuk teknologi/gadget per hari</label>
+              <select class="form-select" id="Schedule_Dedicated_to_Technology" name="Schedule_Dedicated_to_Technology" required>
+                <option value="">Pilih...</option>
+                <option value="1">0-2 jam</option>
+                <option value="2">3-5 jam</option>
+                <option value="3">Lebih dari 5 jam</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
             </div>
 
             <div class="col-12 field">
-              <label class="form-label" for="activity">Tingkat Aktivitas Fisik</label>
-              <div class="input-group has-validation">
-                <span class="input-group-text"><i class="bi bi-activity" aria-hidden="true"></i></span>
-                <select class="form-select" id="activity" name="activity" required>
-                  <option value="">Pilih tingkat aktivitas...</option>
-                  <option value="1">1 - Sangat Rendah</option>
-                  <option value="2">2 - Rendah</option>
-                  <option value="3">3 - Sedang</option>
-                  <option value="4">4 - Tinggi</option>
-                </select>
-                <div class="invalid-feedback">Pilih tingkat aktivitas.</div>
-              </div>
+              <label class="form-label" for="Type_of_Transportation_Used">Moda transportasi utama</label>
+              <select class="form-select" id="Type_of_Transportation_Used" name="Type_of_Transportation_Used" required>
+                <option value="">Pilih...</option>
+                <option value="1">Mobil</option>
+                <option value="2">Sepeda motor</option>
+                <option value="3">Sepeda</option>
+                <option value="4">Transportasi umum</option>
+                <option value="5">Jalan kaki</option>
+              </select>
+              <div class="invalid-feedback">Wajib dipilih.</div>
             </div>
+          </div>
 
-            <div class="col-12">
-              <div class="d-flex gap-2 align-items-center">
-                <button type="submit" class="btn btn-sl btn-lg flex-fill" id="btnSubmit">
-                  <i class="bi bi-search me-1" aria-hidden="true"></i> Klasifikasi
-                </button>
-                <button type="reset" class="btn btn-outline-secondary btn-lg" id="btnReset">
-                  <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i> Reset
-                </button>
-              </div>
+          <div class="col-12">
+            <div class="d-flex gap-2 align-items-center">
+              <button type="submit" class="btn btn-sl btn-lg flex-fill" id="btnSubmit">
+                <i class="bi bi-search me-1"></i> Klasifikasi
+              </button>
+              <button type="reset" class="btn btn-outline-secondary btn-lg" id="btnReset">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
             </div>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- Hasil klasifikasi: placeholder awal, diisi oleh klasifikasi.js -->
     <div id="resultContainer" aria-live="polite">
       <div class="sl-card mt-3">
         <div class="sl-card-body text-center py-5">
-          <i class="bi bi-clipboard2-pulse placeholder-icon" aria-hidden="true"></i>
+          <i class="bi bi-clipboard2-pulse placeholder-icon"></i>
           <h2 class="h5 mt-3 text-muted fw-semibold">Hasil Klasifikasi</h2>
           <p class="text-muted mb-0">Isi form di atas lalu klik <b>Klasifikasi</b>.</p>
         </div>

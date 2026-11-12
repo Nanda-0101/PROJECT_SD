@@ -1,56 +1,528 @@
-/* Halaman Klasifikasi */
-.bmi-preview { background: rgba(255, 255, 255, .55); border: 1px dashed rgba(20, 23, 31, .2); border-radius: 16px; padding: .95rem 1.1rem; }
-.placeholder-icon { font-size: 4.2rem; color: #b6c2e2; }
+/* ============================================================
+   HALAMAN KLASIFIKASI — Style Utama
+   Model Ensemble v3 (LightGBM + MLP, 14 fitur mentah)
+   ============================================================ */
 
-/* ===== Loading ===== */
-.loading-overlay { display: none; text-align: center; padding: 2.5rem 1rem; }
-.loading-overlay.active { display: block; }
-.loading-spinner { width: 56px; height: 56px; border: 5px solid rgba(10, 108, 240, .14); border-top-color: var(--sl-blue); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 1.1rem; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.progress-bar-custom { height: 6px; background: rgba(20, 23, 31, .08); border-radius: 3px; overflow: hidden; max-width: 300px; margin: 1rem auto; }
-.progress-bar-custom .fill { height: 100%; background: var(--sl-blue); border-radius: 3px; width: 0%; transition: width .4s ease; }
+/* ---------- Placeholder & Util ---------- */
+.placeholder-icon {
+  font-size: 4.2rem;
+  color: #b6c2e2;
+}
 
-/* ===== Hasil ===== */
-.result-card { position: relative; overflow: hidden; border-radius: var(--r-xl); padding: clamp(1.6rem, 4vw, 2.4rem); margin-top: 1rem; text-align: center; color: #fff; animation: pop .5s cubic-bezier(.3, .8, .3, 1); box-shadow: 0 24px 50px -22px var(--cat), inset 0 1px 0 rgba(255, 255, 255, .45); border: 1px solid rgba(255, 255, 255, .35); }
-@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
-.result-card::before { content: ""; position: absolute; inset: 0 0 45% 0; background: linear-gradient(180deg, rgba(255, 255, 255, .28), transparent); pointer-events: none; }
-.result-card > * { position: relative; }
-.result-card .result-icon { font-size: 3.2rem; margin-bottom: .4rem; display: block; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .2)); }
-.result-card .result-label { opacity: .95; font-size: .85rem; font-weight: 500; margin-bottom: .2rem; }
-.result-card .result-cat { font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 800; letter-spacing: -.035em; margin: .4rem 0; line-height: 1.12; }
-.result-card .result-cat:focus { outline: none; }
-.result-normal { --cat: #16a34a; background: linear-gradient(135deg, #15803d, #34d399); }
-.result-underweight { --cat: #0891b2; background: linear-gradient(135deg, #0e7490, #67e8f9); }
-.result-overweight { --cat: #d98e00; background: linear-gradient(135deg, #d97706, #fcd34d); }
-.result-obese { --cat: #e5384f; background: linear-gradient(135deg, #be123c, #fb7185); }
+#resultContainer {
+  scroll-margin-top: 96px; /* navbar sticky */
+}
 
-.confidence-wrap { display: flex; align-items: center; justify-content: center; gap: 1.4rem; flex-wrap: wrap; }
-.confidence-ring { width: 110px; height: 110px; position: relative; }
-.confidence-ring svg { transform: rotate(-90deg); }
-.confidence-ring .bar { transition: stroke-dashoffset 1s cubic-bezier(.3, .7, .2, 1); }
-.confidence-ring .value { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 1.4rem; color: #fff; }
-.confidence-ring .value small { font-size: .62rem; opacity: .9; font-weight: 500; }
+/* ============================================================
+   HASIL KLASIFIKASI
+   ============================================================ */
 
-/* ===== Probabilitas ===== */
-.prob-row { display: flex; align-items: center; gap: .85rem; padding: .85rem 0; border-bottom: 1px dashed var(--sl-line); }
-.prob-row:last-of-type { border-bottom: none; }
-.prob-icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
-.prob-info { flex: 1; min-width: 0; }
-.prob-info .name { font-weight: 700; font-size: .88rem; display: flex; align-items: center; gap: .5rem; }
-.prob-info .bar-wrap { height: 8px; background: rgba(20, 23, 31, .07); border-radius: 4px; overflow: hidden; margin-top: .4rem; }
-.prob-info .bar-wrap .fill { height: 100%; width: 0; border-radius: 4px; transition: width .9s cubic-bezier(.3, .7, .2, 1); }
-.prob-pct { font-weight: 800; font-size: 1.05rem; min-width: 4rem; text-align: right; font-variant-numeric: tabular-nums; }
-.prob-pct.winner { font-size: 1.25rem; }
-#resultContainer { scroll-margin-top: 96px; } /* agar hasil tidak tertutup navbar sticky */
-.chip-win { font-size: .66rem; font-weight: 700; color: #fff; background: var(--sl-ink); border-radius: 999px; padding: .12rem .55rem; }
-.model-table th, .model-table td { text-align: right; }
-.model-table th:first-child, .model-table td:first-child { text-align: left; }
-.model-table .best td { font-weight: 800; }
+.result-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-/* ===== Feedback ===== */
-.feedback-box { background: rgba(245, 167, 0, .1); border-radius: 18px; padding: 1.2rem; text-align: center; }
-.feedback-box .btn-fb { padding: .5rem 1.3rem; border-radius: 999px; font-weight: 600; border: none; margin: .25rem; transition: transform .2s, filter .2s; color: #fff; }
-.feedback-box .btn-fb:hover { transform: translateY(-2px); filter: brightness(1.07); }
-.btn-fb-yes { background: #16a34a; } .btn-fb-no { background: #e5384f; }
+/* ---------- HERO: Winner ---------- */
+.winner-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--w-bg);
+  border: 1px solid var(--w-border);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  animation: heroIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 12px 32px -18px var(--w-color);
+}
 
-@media (max-width: 767.98px) { .confidence-wrap { flex-direction: column; } }
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.winner-hero__glow {
+  position: absolute;
+  inset: -50% -20% auto auto;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--w-color)33, transparent 70%);
+  pointer-events: none;
+}
+
+.winner-hero__icon {
+  flex: 0 0 auto;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: white;
+  color: var(--w-color);
+  font-size: 2.5rem;
+  box-shadow: 0 8px 24px -8px var(--w-color);
+}
+
+.winner-hero__body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.winner-hero__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--w-color);
+  opacity: 0.8;
+}
+
+.winner-hero__title {
+  margin: 2px 0 10px;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.winner-hero__confidence {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.winner-hero__conf-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--w-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.winner-hero__conf-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.winner-hero__meter {
+  height: 8px;
+  background: white;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.winner-hero__meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--w-color)aa, var(--w-color));
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 576px) {
+  .winner-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .winner-hero__icon {
+    width: 64px;
+    height: 64px;
+    font-size: 2rem;
+  }
+  .winner-hero__title {
+    font-size: 1.5rem;
+  }
+}
+
+/* ---------- GRID Probabilitas (responsive) ---------- */
+.prob-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- Kartu Probabilitas ---------- */
+.prob-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.prob-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px var(--accent, #6366f1);
+}
+
+.prob-card__head {
+  padding: 16px 18px;
+  background: linear-gradient(180deg, var(--accent)0d, transparent);
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.prob-card__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prob-card__icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+}
+
+.prob-card__name {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.prob-card__sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.prob-card__body {
+  padding: 16px 18px;
+}
+
+.prob-card__desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* ---------- Baris Probabilitas ---------- */
+.prob-row {
+  margin-bottom: 12px;
+}
+
+.prob-row:last-child {
+  margin-bottom: 0;
+}
+
+.prob-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.prob-row__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.prob-row__badge {
+  font-size: 0.65rem;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-left: 4px;
+}
+
+.prob-row__value {
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.prob-row__track {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.prob-row__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: fillIn 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fillIn {
+  from {
+    width: 0 !important;
+  }
+}
+
+.prob-row--winner .prob-row__track {
+  background: #dcfce7;
+}
+
+.prob-row--winner .prob-row__label {
+  font-weight: 700;
+}
+
+/* ---------- Tabel Perbandingan ---------- */
+.cmp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.cmp-table thead th {
+  padding: 10px 8px;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.cmp-table thead th i {
+  margin-right: 4px;
+}
+
+.cmp-table tbody td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.cmp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cmp-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.cmp-badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+
+.cmp-row--winner {
+  background: #f0fdf4;
+}
+
+.cmp-cell {
+  min-width: 100px;
+  text-align: center;
+}
+
+.cmp-bar {
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.cmp-bar__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.cmp-value {
+  font-weight: 700;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmp-cell--winner .cmp-value {
+  font-size: 0.95rem;
+}
+
+/* ---------- Rekomendasi ---------- */
+.reco-card {
+  display: flex;
+  gap: 14px;
+  background: var(--reco-bg);
+  border: 1px solid var(--reco-color)33;
+  border-left: 4px solid var(--reco-color);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.reco-card__icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: white;
+  color: var(--reco-color);
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+}
+
+.reco-card__title {
+  font-weight: 700;
+  color: var(--reco-color);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.reco-card__text {
+  color: #0f172a;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ---------- Feedback ---------- */
+.feedback-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.feedback-card__head {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.feedback-card__icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #3b82f6;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+}
+
+.feedback-card__title {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.feedback-card__sub {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.feedback-card__body {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.feedback-btn {
+  flex: 1;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 2px solid;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.feedback-btn--yes {
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
+.feedback-btn--yes:hover:not(:disabled) {
+  background: #22c55e;
+  color: white;
+}
+
+.feedback-btn--no {
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.feedback-btn--no:hover:not(:disabled) {
+  background: #ef4444;
+  color: white;
+}
+
+.feedback-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.feedback-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 0.95rem;
+  width: 100%;
+  animation: successIn 0.4s ease;
+}
+
+.feedback-success i {
+  font-size: 1.3rem;
+}
+
+@keyframes successIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 576px) {
+  .feedback-btn {
+    flex: 1 1 100%;
+  }
+}

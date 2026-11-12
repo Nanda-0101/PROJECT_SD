@@ -1,13 +1,19 @@
-from flask import Blueprint, request, jsonify, session
+# app/ml_routes.py
+from flask import Blueprint, jsonify, request, session
+
 from app import db
 from app.ml_model import predict as model_predict
-from app.models import Prediction, PredictionProbability, Feedback, Gender, ActivityLevel
+from app.models import Feedback, Prediction, PredictionProbability
 
 ml_bp = Blueprint("ml", __name__, url_prefix="/api/ml")
 
 REQUIRED_FIELDS = [
-    "Age", "Gender_Encoded", "Height_winsorized",
-    "Weight_winsorized", "PhysicalActivityLevel",
+    "Sex", "Age", "Height",
+    "Overweight_Obese_Family", "Consumption_of_Fast_Food",
+    "Frequency_of_Consuming_Vegetables", "Number_of_Main_Meals_Daily",
+    "Food_Intake_Between_Meals", "Smoking", "Liquid_Intake_Daily",
+    "Calculation_of_Calorie_Intake", "Physical_Exercise",
+    "Schedule_Dedicated_to_Technology", "Type_of_Transportation_Used",
 ]
 
 
@@ -22,24 +28,15 @@ def predict_route():
         return jsonify({"error": f"Field wajib: {', '.join(missing)}"}), 422
 
     try:
-        result = model_predict(data)
+        result = model_predict({k: float(data[k]) for k in REQUIRED_FIELDS})
     except Exception as e:
         return jsonify({"error": f"Prediksi gagal: {e}"}), 500
 
     try:
-        gender = Gender.query.filter_by(encoding_value=int(data["Gender_Encoded"])).first()
-        activity = ActivityLevel.query.filter_by(encoding_value=int(data["PhysicalActivityLevel"]) - 1).first()
-        if not gender or not activity:
-            return jsonify({"error": "Gender atau activity tidak valid."}), 422
-
         pred = Prediction(
             id_user=session["user_id"],
-            id_category=result["prediction"] + 1,
-            id_gender=gender.id_gender,
-            id_activity=activity.id_activity,
-            age=int(data["Age"]),
-            height=float(data["Height_winsorized"]),
-            weight=float(data["Weight_winsorized"]),
+            id_category=result["prediction"] + 1,   # 1..4
+            features={k: float(data[k]) for k in REQUIRED_FIELDS},
         )
         db.session.add(pred)
         db.session.flush()
@@ -47,10 +44,9 @@ def predict_route():
         for i, prob in enumerate(result["_raw"]["ensemble"]):
             db.session.add(PredictionProbability(
                 id_prediction=pred.id_prediction,
-                id_category=i + 1,
+                id_category=i + 1,                 # 1..4
                 probability=float(prob),
             ))
-
         db.session.commit()
         result["id_prediction"] = pred.id_prediction
     except Exception as e:
@@ -84,6 +80,5 @@ def feedback_route():
         fb.is_accurate = is_accurate
     else:
         db.session.add(Feedback(id_prediction=id_pred, is_accurate=is_accurate))
-
     db.session.commit()
     return jsonify({"ok": True, "is_accurate": is_accurate}), 200

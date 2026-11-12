@@ -60,7 +60,7 @@
         <!-- Angka ringkas. data-count = target animasi hitung-naik (common.js). -->
         <div class="hero-stats" id="heroStats">
           <div class="item">
-            <div class="val" id="hsAcc" data-count="93" data-suffix="%">93%</div>
+            <div class="val" id="hsAcc" data-count="86.3" data-decimals="1" data-suffix="%">86.3%</div>
             <div class="lbl">Akurasi Model</div>
           </div>
           <div class="item">
@@ -72,8 +72,8 @@
             <div class="lbl">Model Ensemble</div>
           </div>
           <div class="item">
-            <div class="val" id="hsN" data-count="1188">1,188</div>
-            <div class="lbl">Data Latih</div>
+            <div class="val" id="hsN" data-count="322">322</div>
+            <div class="lbl">Data Uji</div>
           </div>
         </div>
       </section>
@@ -96,29 +96,29 @@
             <div class="col-md-3 col-6">
               <div class="stat-card">
                 <div class="stat-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></div>
-                <div class="stat-value" data-count="93.0" data-decimals="1" data-suffix="%">93.0%</div>
+                <div class="stat-value" data-count="86.3" data-decimals="1" data-suffix="%">86.3%</div>
                 <div class="stat-label">Akurasi</div>
               </div>
             </div>
             <div class="col-md-3 col-6">
               <div class="stat-card">
                 <div class="stat-icon"><i class="bi bi-graph-up" aria-hidden="true"></i></div>
-                <div class="stat-value" data-count="93.4" data-decimals="1" data-suffix="%">93.4%</div>
-                <div class="stat-label">F1-Score</div>
+                <div class="stat-value" data-count="83.4" data-decimals="1" data-suffix="%">83.4%</div>
+                <div class="stat-label">F1-Score (Macro)</div>
               </div>
             </div>
             <div class="col-md-3 col-6">
               <div class="stat-card">
                 <div class="stat-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></div>
-                <div class="stat-value" data-count="94.0" data-decimals="1" data-suffix="%">94.0%</div>
-                <div class="stat-label">Precision</div>
+                <div class="stat-value" data-count="85.2" data-decimals="1" data-suffix="%">85.2%</div>
+                <div class="stat-label">Precision (Macro)</div>
               </div>
             </div>
             <div class="col-md-3 col-6">
               <div class="stat-card">
                 <div class="stat-icon"><i class="bi bi-activity" aria-hidden="true"></i></div>
-                <div class="stat-value" data-count="93.0" data-decimals="1" data-suffix="%">93.0%</div>
-                <div class="stat-label">Recall</div>
+                <div class="stat-value" data-count="82.1" data-decimals="1" data-suffix="%">82.1%</div>
+                <div class="stat-label">Recall (Macro)</div>
               </div>
             </div>
           </div>
@@ -143,33 +143,33 @@
               <tbody id="evalRows">
                 <tr>
                   <td><span class="cat-pill cat-under">Underweight</span></td>
-                  <td>96.0%</td>
-                  <td>93.0%</td>
-                  <td>95.0%</td>
+                  <td>83.3%</td>
+                  <td>66.7%</td>
+                  <td>74.1%</td>
                 </tr>
                 <tr>
                   <td><span class="cat-pill cat-normal">Normal weight</span></td>
-                  <td>93.0%</td>
-                  <td>93.0%</td>
-                  <td>93.0%</td>
+                  <td>90.9%</td>
+                  <td>90.9%</td>
+                  <td>90.9%</td>
                 </tr>
                 <tr>
                   <td><span class="cat-pill cat-over">Overweight</span></td>
-                  <td>89.0%</td>
-                  <td>93.0%</td>
-                  <td>91.0%</td>
+                  <td>83.1%</td>
+                  <td>83.1%</td>
+                  <td>83.1%</td>
                 </tr>
                 <tr>
                   <td><span class="cat-pill cat-obese">Obese</span></td>
-                  <td>97.0%</td>
-                  <td>92.0%</td>
-                  <td>93.0%</td>
+                  <td>83.3%</td>
+                  <td>87.7%</td>
+                  <td>85.5%</td>
                 </tr>
                 <tr class="row-total">
-                  <td>Rata-rata</td>
-                  <td>93.8%</td>
-                  <td>92.8%</td>
-                  <td>93.0%</td>
+                  <td>Rata-rata (Macro)</td>
+                  <td>85.2%</td>
+                  <td>82.1%</td>
+                  <td>83.4%</td>
                 </tr>
               </tbody>
             </table>
