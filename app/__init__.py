@@ -38,9 +38,11 @@ def create_app(config_name: str | None = None) -> Flask:
     # Registrasi Blueprint
     from app.routes import main_bp  # kalau ada
     from app.ml_routes import ml_bp
+    from app.history import history_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(ml_bp)
+    app.register_blueprint(history_bp)
 
     # Context processor user
     @app.context_processor
