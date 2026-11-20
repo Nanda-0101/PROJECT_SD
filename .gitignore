@@ -1,5 +1,7 @@
 venv/
+.venv/
 .pytest_cache/
-__pycache__/
+_pycache_/
 hf_model/
 .env
+sakit_learn.sql
