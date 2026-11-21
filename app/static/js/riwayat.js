@@ -476,12 +476,12 @@
     }
   }
 
+  
   /* ---------- Cetak ---------- */
-  function updatePrintMeta() {
-    el.printMeta.textContent =
-      `Riwayat klasifikasi Sakit-Learn, dicetak ${dateFormat.format(new Date())}. ` +
-      `Menampilkan ${state.items.length} dari ${state.total} hasil.`;
-  }
+function updatePrintMeta() {
+  el.printMeta.textContent =
+    `Ringkasan riwayat klasifikasi Sakit-Learn, dicetak ${dateFormat.format(new Date())}.`;
+}
 
   /* ---------- Reset filter ---------- */
   function resetFilters() {

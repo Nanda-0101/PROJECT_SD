@@ -356,27 +356,21 @@
 
 /* ---------- Cetak / PDF ---------- */
 
+
 .print-only {
-  display: none; /* di layar biasa tidak terlihat */
+  display: none; 
 }
 
 @media print {
-  /* Sembunyikan semua yang interaktif, sisakan isi laporan */
+ 
   #site-navbar,
   #site-footer,
   .skip-link,
   .chip-row,
-  .view-toggle,
-  #btnPrint,
-  #bulkBar,
-  #pager,
   #loadError,
   section[aria-label="Filter riwayat"],
-  #selAll,
-  .row-check,
-  .row-actions,
-  th:last-child,
-  td:last-child,
+  .d-flex:has(#fRange),
+  section[aria-label="Daftar riwayat"],
   .toast-container {
     display: none !important;
   }
@@ -388,10 +382,8 @@
     color: #555;
   }
 
-  .sl-card,
-  tr,
-  .chart-box {
-    break-inside: avoid; /* jangan terpotong di tengah halaman */
+  .sl-card {
+    break-inside: avoid; 
   }
 }
 
