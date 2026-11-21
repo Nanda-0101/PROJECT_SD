@@ -43,9 +43,17 @@ def _download_from_hf(repo_id: str) -> Path:
 
 
 def load_model(repo_id: str = None, local_dir: Union[str, Path] = None):
-    if repo_id:
+    base_dir = Path(__file__).resolve().parent
+    target_dir = Path(local_dir) if local_dir else (base_dir / "hf_model")
+
+    # Cek apakah file utama sudah ada secara lokal
+    required_files = ["model.joblib", "config.json", "obesity_utils.py"]
+    files_exist = all((target_dir / f).exists() for f in required_files)
+
+    if repo_id and not files_exist:
         local_dir = _download_from_hf(repo_id)
-    local_dir = Path(local_dir) if local_dir else Path(__file__).resolve().parent
+    else:
+        local_dir = target_dir if files_exist else base_dir
 
     if str(local_dir) not in sys.path:
         sys.path.insert(0, str(local_dir))
@@ -60,7 +68,6 @@ def load_model(repo_id: str = None, local_dir: Union[str, Path] = None):
     model = joblib.load(model_path)
     cfg = json.loads(config_path.read_text())
     return model, cfg
-
 
 def _extract_per_model_proba(model, frame):
     """Ambil probabilitas per sub-model dari VotingClassifier di dalam pipeline."""
