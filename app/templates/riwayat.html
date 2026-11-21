@@ -33,15 +33,8 @@
         <i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat Klasifikasi
       </h1>
 
-      <!-- Banner placeholder -->
-      <div class="alert alert-info d-flex align-items-center gap-2 mb-3" role="note">
-        <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
-        <div>
-          <b>Fitur riwayat belum aktif.</b>
-          Halaman ini menampilkan struktur antarmuka. Data akan terisi otomatis setelah backend
-          <code>/api/history</code> diaktifkan pada rilis berikutnya.
-        </div>
-      </div>
+      <!-- Pesan error saat data gagal dimuat. Diisi oleh riwayat.js -->
+      <div class="alert alert-danger mb-3" id="loadError" role="alert" hidden></div>
 
       <!-- ===== FILTER ===== -->
       <section class="sl-card mb-3" aria-label="Filter riwayat">
@@ -52,13 +45,13 @@
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
                 <input type="search" class="form-control" id="fSearch"
-                       placeholder="Cari kategori atau tanggal..." disabled />
+                       placeholder="Cari kategori atau tanggal..." />
               </div>
             </div>
 
             <div class="col-6 col-lg-3">
               <label class="visually-hidden" for="fCategory">Kategori</label>
-              <select class="form-select" id="fCategory" disabled>
+              <select class="form-select" id="fCategory">
                 <option value="">Semua Kategori</option>
                 <option value="normal">Normal weight</option>
                 <option value="under">Underweight</option>
@@ -69,7 +62,7 @@
 
             <div class="col-6 col-lg-2">
               <label class="visually-hidden" for="fSort">Urutan</label>
-              <select class="form-select" id="fSort" disabled>
+              <select class="form-select" id="fSort">
                 <option value="desc">Terbaru</option>
                 <option value="asc">Terlama</option>
               </select>
@@ -78,11 +71,11 @@
             <div class="col-lg-2">
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-success flex-fill" id="btnExport" type="button"
-                        title="Export CSV" aria-label="Export CSV" disabled>
+                        title="Export CSV" aria-label="Export CSV">
                   <i class="bi bi-filetype-csv" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-outline-danger flex-fill" id="btnClearAll" type="button"
-                        title="Hapus Semua" aria-label="Hapus semua riwayat" disabled>
+                        title="Hapus Semua" aria-label="Hapus semua riwayat">
                   <i class="bi bi-trash" aria-hidden="true"></i>
                 </button>
               </div>
@@ -91,21 +84,21 @@
         </div>
       </section>
 
-      <!-- Chip kategori (placeholder, non-klik) -->
+      <!-- Chip kategori. Angka dan status aktif diatur oleh riwayat.js -->
       <div class="chip-row mb-3" id="catChips" role="group" aria-label="Filter cepat kategori">
-        <button type="button" class="chip active" data-key="" style="--cat:#697083" disabled>
+        <button type="button" class="chip active" data-key="" style="--cat:#697083">
           <span class="dot"></span>Semua<span class="num">0</span>
         </button>
-        <button type="button" class="chip" data-key="normal" style="--cat:#16a34a" disabled>
+        <button type="button" class="chip" data-key="normal" style="--cat:#16a34a">
           <span class="dot"></span>Normal weight<span class="num">0</span>
         </button>
-        <button type="button" class="chip" data-key="under" style="--cat:#06b6d4" disabled>
+        <button type="button" class="chip" data-key="under" style="--cat:#06b6d4">
           <span class="dot"></span>Underweight<span class="num">0</span>
         </button>
-        <button type="button" class="chip" data-key="over" style="--cat:#f5a700" disabled>
+        <button type="button" class="chip" data-key="over" style="--cat:#f5a700">
           <span class="dot"></span>Overweight<span class="num">0</span>
         </button>
-        <button type="button" class="chip" data-key="obese" style="--cat:#e5384f" disabled>
+        <button type="button" class="chip" data-key="obese" style="--cat:#e5384f">
           <span class="dot"></span>Obese<span class="num">0</span>
         </button>
       </div>
@@ -116,7 +109,7 @@
           <label class="small text-muted" for="fRange">
             <i class="bi bi-calendar3" aria-hidden="true"></i> Rentang
           </label>
-          <select class="form-select form-select-sm w-auto" id="fRange" disabled>
+          <select class="form-select form-select-sm w-auto" id="fRange">
             <option value="0">Semua waktu</option>
             <option value="7">7 hari terakhir</option>
             <option value="30">30 hari terakhir</option>
@@ -128,18 +121,26 @@
         </button>
 
         <div class="view-toggle" role="group" aria-label="Pilih tampilan">
-          <button type="button" id="btnViewTable" aria-pressed="true" disabled>
+          <button type="button" id="btnViewTable" aria-pressed="true">
             <i class="bi bi-table" aria-hidden="true"></i> Tabel
           </button>
-          <button type="button" id="btnViewCard" aria-pressed="false" disabled>
+          <button type="button" id="btnViewCard" aria-pressed="false">
             <i class="bi bi-grid-3x2-gap" aria-hidden="true"></i> Kartu
           </button>
         </div>
       </div>
 
-      <!-- ===== TABEL RIWAYAT (kosong, tanpa kolom BMI) ===== -->
+      <!-- ===== TABEL RIWAYAT ===== -->
       <section class="sl-card" aria-label="Daftar riwayat">
         <div class="sl-card-body">
+          <!-- Bilah aksi massal. Muncul bila ada baris yang dicentang -->
+          <div class="bulk-bar" id="bulkBar" hidden>
+            <span><b id="bulkCount">0</b> riwayat dipilih</span>
+            <button type="button" class="btn btn-danger btn-sm" id="btnBulkDelete">
+              <i class="bi bi-trash3" aria-hidden="true"></i> Hapus terpilih
+            </button>
+          </div>
+
           <div class="table-responsive" id="tableWrap">
             <table class="table table-hover align-middle mb-0">
               <caption class="visually-hidden">Riwayat klasifikasi status berat badan</caption>
@@ -147,13 +148,12 @@
                 <tr>
                   <th scope="col">
                     <input type="checkbox" class="form-check-input" id="selAll"
-                           aria-label="Pilih semua di halaman ini" disabled /> #
+                           aria-label="Pilih semua di halaman ini" /> #
                   </th>
                   <th scope="col">Tanggal</th>
                   <th scope="col">Usia</th>
                   <th scope="col">Gender</th>
                   <th scope="col">Tinggi</th>
-                  <th scope="col">Berat</th>
                   <th scope="col">Aktivitas</th>
                   <th scope="col">Kategori</th>
                   <th scope="col">Keyakinan</th>
@@ -161,23 +161,17 @@
                 </tr>
               </thead>
               <tbody id="historyBody">
-                <!-- Placeholder: tidak ada data -->
                 <tr>
-                  <td colspan="10">
-                    <div class="empty-state text-center py-5">
-                      <i class="bi bi-inbox fs-1 text-muted" aria-hidden="true"></i>
-                      <p class="mt-2 mb-3 text-muted">Belum ada riwayat klasifikasi</p>
-                      <a href="{{ url_for('main.beranda') }}" class="btn btn-sl btn-sm">
-                        <i class="bi bi-play-circle-fill me-1" aria-hidden="true"></i> Mulai Klasifikasi
-                      </a>
-                    </div>
+                  <td colspan="9" class="text-center text-muted py-5">
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                    Memuat riwayat...
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Tampilan kartu (placeholder) -->
+          <!-- Tampilan kartu. Diisi oleh riwayat.js -->
           <div class="row g-3" id="cardList" hidden></div>
 
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2">
@@ -189,7 +183,7 @@
         </div>
       </section>
 
-      <!-- ===== VISUALISASI: TANPA chart, hanya ringkasan statistik ===== -->
+      <!-- ===== RINGKASAN STATISTIK ===== -->
       <h2 class="section-title">
         <i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i> Ringkasan Riwayat
       </h2>
@@ -223,7 +217,7 @@
 
       <p class="small text-muted mt-3 mb-0">
         <i class="bi bi-info-circle" aria-hidden="true"></i>
-        Statistik di atas akan terisi otomatis setelah backend <code>/api/history/stats</code> aktif.
+        Ringkasan mengikuti filter pencarian, kategori, dan rentang waktu yang sedang aktif.
       </p>
     </main>
 
@@ -231,9 +225,9 @@
       {% include 'components/footer.html' %}
     </div>
 
-    <!-- Modal detail: placeholder, kosong -->
+    <!-- Modal detail. Isi diatur oleh riwayat.js -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title h5" id="detailTitle">
@@ -242,23 +236,23 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
           </div>
           <div class="modal-body" id="detailBody">
-            <p class="text-muted mb-0">Detail akan tersedia setelah backend aktif.</p>
+            <p class="text-muted mb-0">Memuat detail...</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal konfirmasi hapus: placeholder -->
+    <!-- Modal konfirmasi hapus. Teks diatur oleh riwayat.js -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
           <div class="modal-body p-4">
             <div class="confirm-icon"><i class="bi bi-trash3-fill" aria-hidden="true"></i></div>
             <h2 class="h5" id="confirmTitle">Hapus riwayat?</h2>
-            <p class="text-muted mb-4" id="confirmText">Fitur hapus belum aktif.</p>
+            <p class="text-muted mb-4" id="confirmText"></p>
             <div class="d-flex gap-2 justify-content-end">
               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-              <button type="button" class="btn btn-danger" id="confirmOk" disabled>Hapus</button>
+              <button type="button" class="btn btn-danger" id="confirmOk">Hapus</button>
             </div>
           </div>
         </div>
@@ -271,10 +265,6 @@
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
 
-    <script>
-      // Placeholder script: hanya tombol Cetak yang aktif (print bawaan browser).
-      // Tombol lain disabled sampai backend diaktifkan.
-      document.getElementById("btnPrint")?.addEventListener("click", () => window.print());
-    </script>
+    <script src="{{ url_for('static', filename='js/riwayat.js') }}"></script>
   </body>
 </html>
