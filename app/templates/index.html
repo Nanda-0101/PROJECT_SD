@@ -54,7 +54,14 @@
                 <i class="bi bi-info-circle me-1" aria-hidden="true"></i> Pelajari Model
               </a>
             </div>
+
+            <ul class="hero-points list-unstyled">
+              <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> 14 pertanyaan singkat</li>
+              <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Peluang untuk 4 kategori</li>
+              <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Riwayat tersimpan</li>
+            </ul>
           </div>
+
         </div>
 
         <!-- Angka ringkas. data-count = target animasi hitung-naik (common.js). -->
@@ -88,7 +95,7 @@
         </div>
         <div class="sl-card-body">
           <p class="text-muted mb-3">
-            Model ensemble diuji pada dataset. Berikut hasil evaluasi dengan rentang <b>tingkat kepercayaan 95%</b>:
+            Model ensemble diuji pada <b>322 data</b> yang tidak dipakai saat pelatihan. Berikut hasil evaluasinya.
           </p>
 
           <!-- 4 kartu angka: Akurasi, F1, Precision, Recall (statis) -->
@@ -175,6 +182,64 @@
             </table>
           </div>
 
+          <!-- Perbandingan model tunggal dan komposisi dataset -->
+          <div class="row g-4 mt-1">
+            <div class="col-lg-7">
+              <h3 class="h6 fw-bold mb-3">
+                <i class="bi bi-layers-fill text-primary" aria-hidden="true"></i> Ensemble dibanding Model Tunggal
+              </h3>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0 cmp">
+                  <caption class="visually-hidden">
+                    Perbandingan metrik LightGBM, MLP, dan Ensemble pada data uji
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Metrik</th>
+                      <th scope="col">LightGBM</th>
+                      <th scope="col">MLP</th>
+                      <th scope="col" class="col-ens">Ensemble</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th scope="row">Akurasi</th><td>84.5%</td><td>82.9%</td><td class="col-ens best">86.3%</td></tr>
+                    <tr><th scope="row">F1-Score</th><td>81.8%</td><td>80.3%</td><td class="col-ens best">83.4%</td></tr>
+                    <tr><th scope="row">Precision</th><td class="best">87.7%</td><td>78.4%</td><td class="col-ens">85.2%</td></tr>
+                    <tr><th scope="row">Recall</th><td>78.5%</td><td class="best">83.0%</td><td class="col-ens">82.1%</td></tr>
+                    <tr><th scope="row">ROC-AUC</th><td>96.8%</td><td>96.1%</td><td class="col-ens best">97.0%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small text-muted mt-2 mb-0">
+                Precision, recall, dan F1 memakai rata-rata macro. Angka tebal menandai nilai tertinggi pada tiap baris.
+              </p>
+            </div>
+
+            <div class="col-lg-5">
+              <h3 class="h6 fw-bold mb-3">
+                <i class="bi bi-pie-chart-fill text-primary" aria-hidden="true"></i> Komposisi Dataset
+              </h3>
+              <p class="small text-muted mb-2"><b class="text-body">1.610</b> baris data, 14 fitur, dan 4 kategori.</p>
+
+              <div class="seg" role="img" aria-label="Proporsi data per kategori">
+                <i class="cat-under" style="flex-grow: 73"></i>
+                <i class="cat-normal" style="flex-grow: 658"></i>
+                <i class="cat-over" style="flex-grow: 592"></i>
+                <i class="cat-obese" style="flex-grow: 287"></i>
+              </div>
+
+              <ul class="legend list-unstyled mb-0">
+                <li class="cat-under"><span class="dot"></span><span>Underweight</span><span class="n">73</span><span class="pct">4.5%</span></li>
+                <li class="cat-normal"><span class="dot"></span><span>Normal weight</span><span class="n">658</span><span class="pct">40.9%</span></li>
+                <li class="cat-over"><span class="dot"></span><span>Overweight</span><span class="n">592</span><span class="pct">36.8%</span></li>
+                <li class="cat-obese"><span class="dot"></span><span>Obese</span><span class="n">287</span><span class="pct">17.8%</span></li>
+              </ul>
+              <p class="small text-muted mt-2 mb-0">
+                Underweight punya sampel paling sedikit dan skornya juga paling rendah.
+              </p>
+            </div>
+          </div>
+
           <!-- Penjelasan arsitektur ensemble -->
           <div class="model-info mt-4">
             <div class="model-name">
@@ -207,7 +272,7 @@
           <div class="step-card glass glass-spot">
             <div class="step-num" aria-hidden="true">1</div>
             <h3 class="h6">Masukkan Data</h3>
-            <p>Isi usia, gender, tinggi, berat, dan tingkat aktivitas fisik Anda pada form.</p>
+            <p>Jawab 14 pertanyaan singkat tentang usia, gender, tinggi badan, pola makan, dan kebiasaan harian.</p>
           </div>
         </li>
         <li class="col-md-4">
@@ -221,10 +286,149 @@
           <div class="step-card glass glass-spot">
             <div class="step-num" aria-hidden="true">3</div>
             <h3 class="h6">Lihat Hasil</h3>
-            <p>Dapatkan 4 probabilitas output + kategori terpilih + tingkat kepercayaan.</p>
+            <p>Lihat peluang 4 kategori, kategori terpilih, dan tingkat keyakinan. Semuanya tersimpan di Riwayat.</p>
           </div>
         </li>
       </ol>
+
+      <!-- ===== EMPAT KATEGORI ===== -->
+      <h2 class="section-title reveal" id="kategori">
+        <i class="bi bi-grid-fill" aria-hidden="true"></i> Empat Kategori Hasil
+      </h2>
+      <p class="text-muted reveal">Pilih kategori untuk melihat artinya. Setiap hasil selalu menyertakan peluang keempatnya.</p>
+
+      <!-- Tab kategori. Isi panel diganti oleh beranda.js -->
+      <div class="row g-3 mb-3 reveal" role="tablist" aria-label="Pilih kategori">
+        <div class="col-6 col-lg-3">
+          <button type="button" class="cat-tab cat-under" role="tab" id="tab-under" data-key="under"
+                  aria-selected="false" aria-controls="catPanel">
+            <span class="dot"></span><b>Underweight</b><small>Di bawah rentang sehat</small>
+          </button>
+        </div>
+        <div class="col-6 col-lg-3">
+          <button type="button" class="cat-tab cat-normal" role="tab" id="tab-normal" data-key="normal"
+                  aria-selected="true" aria-controls="catPanel">
+            <span class="dot"></span><b>Normal weight</b><small>Dalam rentang sehat</small>
+          </button>
+        </div>
+        <div class="col-6 col-lg-3">
+          <button type="button" class="cat-tab cat-over" role="tab" id="tab-over" data-key="over"
+                  aria-selected="false" aria-controls="catPanel">
+            <span class="dot"></span><b>Overweight</b><small>Di atas rentang sehat</small>
+          </button>
+        </div>
+        <div class="col-6 col-lg-3">
+          <button type="button" class="cat-tab cat-obese" role="tab" id="tab-obese" data-key="obese"
+                  aria-selected="false" aria-controls="catPanel">
+            <span class="dot"></span><b>Obese</b><small>Jauh di atas rentang sehat</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="cat-panel glass cat-normal reveal" id="catPanel" role="tabpanel" aria-labelledby="tab-normal">
+        <h3 class="h5" id="catTitle">Normal weight</h3>
+        <p id="catDesc">Berat badan berada dalam rentang yang dianggap sehat untuk tinggi badan.</p>
+        <ul id="catTips">
+          <li>Pertahankan pola makan yang seimbang.</li>
+          <li>Tetap aktif bergerak secara rutin.</li>
+          <li>Pantau berkala lewat Riwayat agar hasilnya tetap stabil.</li>
+        </ul>
+      </div>
+
+      <!-- ===== PERTANYAAN UMUM ===== -->
+      <h2 class="section-title reveal" id="faq-judul">
+        <i class="bi bi-question-circle-fill" aria-hidden="true"></i> Pertanyaan yang Sering Muncul
+      </h2>
+      <div class="accordion faq reveal" id="faq">
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+              Apakah hasilnya diagnosis medis?
+            </button>
+          </h3>
+          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+              Bukan. Hasil bersifat indikatif untuk edukasi. Untuk penilaian yang tepat, konsultasikan dengan tenaga kesehatan.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+              Apakah saya perlu menimbang badan?
+            </button>
+          </h3>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+              Tidak. Form tidak meminta berat badan. Model membaca usia, tinggi badan, dan kebiasaan harian.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+              Seberapa akurat modelnya?
+            </button>
+          </h3>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+              Akurasinya 86.3% pada 322 data uji. Kategori Underweight paling sulit karena sampelnya paling sedikit.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+              Apakah hasil saya tersimpan?
+            </button>
+          </h3>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+              Ya. Setiap hasil tersimpan di Riwayat akun Anda. Anda bisa menyaring, mengekspor ke CSV, atau menghapusnya.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AJAKAN BERTINDAK ===== -->
+      <section class="cta-band reveal" aria-labelledby="ctaTitle">
+        <div class="row align-items-center g-3">
+          <div class="col-lg">
+            {% if current_user %}
+            <h2 id="ctaTitle">Halo, {{ current_user.nama_lengkap.split()[0] }}. Siap klasifikasi baru?</h2>
+            <p>Jawab ulang 14 pertanyaan dan bandingkan hasilnya di Riwayat.</p>
+            {% else %}
+            <h2 id="ctaTitle">Siap mengecek status berat badan Anda?</h2>
+            <p>Buat akun atau masuk, lalu jawab 14 pertanyaan singkat.</p>
+            {% endif %}
+          </div>
+          <div class="col-lg-auto d-flex flex-wrap gap-2">
+            {% if current_user %}
+            <a class="btn btn-cta btn-lg" href="{{ url_for('main.klasifikasi') }}">
+              <i class="bi bi-play-circle-fill me-1" aria-hidden="true"></i> Mulai Klasifikasi
+            </a>
+            <a class="btn btn-cta-ghost btn-lg" href="{{ url_for('main.riwayat') }}">
+              <i class="bi bi-clock-history me-1" aria-hidden="true"></i> Lihat Riwayat
+            </a>
+            {% else %}
+            <a class="btn btn-cta btn-lg" href="{{ url_for('main.daftar') }}">
+              <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Buat Akun
+            </a>
+            <a class="btn btn-cta-ghost btn-lg" href="{{ url_for('main.masuk') }}">
+              <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> Masuk
+            </a>
+            {% endif %}
+          </div>
+          <p class="col-12 cta-note">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            Hasil bersifat indikatif dan bukan pengganti diagnosis medis.
+          </p>
+        </div>
+      </section>
     </main>
 
     <div id="site-footer">
@@ -237,6 +441,9 @@
     <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
+
+    <!-- Widget contoh hasil dan tab kategori -->
+    <script src="{{ url_for('static', filename='js/beranda.js') }}"></script>
 
     <!-- ========== OPSI A: MINI REVEAL SCRIPT ========== -->
     <script>

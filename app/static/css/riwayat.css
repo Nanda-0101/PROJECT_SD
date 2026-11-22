@@ -213,6 +213,7 @@
 @media (prefers-reduced-motion: reduce) {
   .chip,
   .ach,
+  .dist i,
   #historyBody tr {
     animation: none;
     transition: none;
@@ -354,23 +355,183 @@
   color: var(--sl-blue); /* ikon kecil penanda riwayat ini punya catatan */
 }
 
+/* ---------- Judul halaman ---------- */
+
+.page-sub {
+  margin: 0;
+  color: var(--sl-muted);
+}
+
+/* ---------- Kartu ringkasan di atas halaman ---------- */
+
+/* Kartu pertama berwarna biru penuh sebagai titik fokus */
+.stat-card.is-primary {
+  border: 0;
+  background: linear-gradient(135deg, #3b8dff 0%, var(--sl-blue-deep) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 24px 44px -24px rgba(10, 108, 240, 0.75);
+}
+
+.stat-card.is-primary .stat-icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.stat-card.is-primary .stat-value {
+  color: #fff;
+}
+
+.stat-card.is-primary .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Teks kategori lebih panjang dari angka, jadi ukurannya dikecilkan */
+.stat-value-sm {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Sebaran kategori ---------- */
+
+.dist {
+  display: flex;
+  gap: 3px;
+  height: 12px;
+  margin-bottom: 0.9rem;
+  overflow: hidden;
+  border-radius: 99px;
+}
+
+.dist[hidden] {
+  display: none; /* display flex di atas akan menimpa atribut hidden bila tidak ditegaskan */
+}
+
+.dist i {
+  flex-basis: 0; /* lebar mengikuti flex-grow yang diisi riwayat.js */
+  min-width: 6px;
+  background: var(--cat);
+  transition: flex-grow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- Penyempurnaan tabel ---------- */
+
+#tableWrap thead th {
+  background: rgba(20, 23, 31, 0.035);
+  border-bottom: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--sl-muted);
+}
+
+#tableWrap thead th:first-child {
+  border-radius: 12px 0 0 12px;
+}
+
+#tableWrap thead th:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+#historyBody td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Garis warna di sisi kiri baris menandai kategorinya */
+#historyBody tr[class*="cat-"] td:first-child {
+  box-shadow: inset 3px 0 0 var(--cat);
+}
+
+#historyBody tr[class*="cat-"]:hover > td {
+  background: color-mix(in srgb, var(--cat) 6%, transparent);
+}
+
+/* Badge kategori dibuat lebih tegas agar terbaca di warna terang */
+#historyBody .badge,
+.hist-card .badge,
+#detailBody .badge {
+  padding: 0.42em 0.85em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Kartu riwayat diberi semburat warna kategori di sudut atas */
+.hist-card {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--cat) 9%, #fff), rgba(255, 255, 255, 0.82) 62%);
+}
+
+/* ---------- Pagination berbentuk pil ---------- */
+
+#pager {
+  gap: 0.25rem;
+}
+
+#pager .page-link {
+  min-width: 2rem;
+  border: 0;
+  border-radius: 999px !important; /* menimpa sudut yang diatur Bootstrap per item */
+  background: transparent;
+  font-weight: 600;
+  text-align: center;
+  color: var(--sl-text);
+}
+
+#pager .page-link:hover {
+  background: var(--sl-blue-soft);
+}
+
+#pager .active .page-link {
+  background: var(--sl-blue);
+  color: #fff;
+}
+
+/* ---------- Keadaan kosong ---------- */
+
+.sl-card .empty-state > .bi {
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--sl-blue-soft);
+  font-size: 1.9rem;
+  color: var(--sl-blue);
+}
+
+/* ---------- Modal ---------- */
+
+.modal-content {
+  border: 0;
+  border-radius: var(--r-lg);
+  box-shadow: 0 30px 70px -20px rgba(20, 30, 70, 0.45);
+}
+
 /* ---------- Cetak / PDF ---------- */
 
-
 .print-only {
-  display: none; 
+  display: none; /* di layar biasa tidak terlihat */
 }
 
 @media print {
- 
+  /* Sembunyikan semua yang interaktif, sisakan isi laporan */
   #site-navbar,
   #site-footer,
   .skip-link,
   .chip-row,
+  .view-toggle,
+  #btnPrint,
+  #bulkBar,
+  #pager,
   #loadError,
   section[aria-label="Filter riwayat"],
-  .d-flex:has(#fRange),
-  section[aria-label="Daftar riwayat"],
+  #selAll,
+  .row-check,
+  .row-actions,
+  th:last-child,
+  td:last-child,
   .toast-container {
     display: none !important;
   }
@@ -382,8 +543,10 @@
     color: #555;
   }
 
-  .sl-card {
-    break-inside: avoid; 
+  .sl-card,
+  tr,
+  .chart-box {
+    break-inside: avoid; /* jangan terpotong di tengah halaman */
   }
 }
 
@@ -448,4 +611,22 @@
 .compare-panel th {
   color: var(--sl-muted);
   font-weight: 600;
+}
+
+/* Tombol "Klasifikasi baru" tidak perlu ikut tercetak */
+@media print {
+  .hist-head .btn {
+    display: none !important;
+  }
+
+  .stat-card.is-primary {
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  .stat-card.is-primary .stat-value,
+  .stat-card.is-primary .stat-label {
+    color: var(--sl-ink);
+  }
 }

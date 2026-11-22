@@ -34,6 +34,7 @@
     sort: $("fSort"),
     range: $("fRange"),
     chips: $("catChips"),
+    dist: $("distBar"),
     tableWrap: $("tableWrap"),
     body: $("historyBody"),
     cards: $("cardList"),
@@ -174,6 +175,18 @@
       chip.classList.toggle("active", active);
       chip.setAttribute("aria-pressed", String(active));
       chip.querySelector(".num").textContent = counts[key === "" ? "all" : key] ?? 0;
+    });
+    renderDistribution(counts);
+  }
+
+  // Bar sebaran kategori. Lebar tiap segmen mengikuti jumlah datanya
+  function renderDistribution(counts) {
+    el.dist.hidden = !counts.all;
+    el.dist.querySelectorAll("[data-key]").forEach((seg) => {
+      const n = counts[seg.dataset.key] ?? 0;
+      seg.style.flexGrow = n;
+      seg.hidden = n === 0;
+      seg.title = `${n} hasil`;
     });
   }
 
@@ -476,12 +489,12 @@
     }
   }
 
-  
   /* ---------- Cetak ---------- */
-function updatePrintMeta() {
-  el.printMeta.textContent =
-    `Ringkasan riwayat klasifikasi Sakit-Learn, dicetak ${dateFormat.format(new Date())}.`;
-}
+  function updatePrintMeta() {
+    el.printMeta.textContent =
+      `Riwayat klasifikasi Sakit-Learn, dicetak ${dateFormat.format(new Date())}. ` +
+      `Menampilkan ${state.items.length} dari ${state.total} hasil.`;
+  }
 
   /* ---------- Reset filter ---------- */
   function resetFilters() {
@@ -585,5 +598,14 @@ function updatePrintMeta() {
   });
 
   /* ---------- Mulai ---------- */
+  // Di layar kecil, kartu lebih nyaman dibaca daripada tabel lebar
+  if (window.matchMedia("(max-width: 575.98px)").matches) {
+    state.view = "card";
+    $("btnViewTable").setAttribute("aria-pressed", "false");
+    $("btnViewCard").setAttribute("aria-pressed", "true");
+    el.tableWrap.hidden = true;
+    el.cards.hidden = false;
+  }
+
   load();
 })();

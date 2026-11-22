@@ -15,6 +15,7 @@
 
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/masuk.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/daftar.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/efek.css') }}" rel="stylesheet" />
   </head>
 
@@ -25,23 +26,162 @@
       {% include 'components/navbar.html' %}
     </div>
 
+    {% set errors = errors or {} %}
+    {% set form = form or {} %}
+
     <main class="container pb-5" id="main">
       <div class="auth-wrap">
-        <div class="auth-card glass">
+        <div class="auth-card auth-card-lg glass">
           <div class="auth-header">
             <span class="auth-logo"><i class="bi bi-person-plus-fill" aria-hidden="true"></i></span>
-            <h1>Pendaftaran</h1>
-            <p>Belum tersedia</p>
+            <h1>Buat Akun</h1>
+            <p>Mulai pantau status berat badan Anda</p>
           </div>
 
-          <div class="auth-body text-center py-3">
-            <p class="text-muted mb-3">
-              Pendaftaran akun baru akan dibuka pada rilis berikutnya. Untuk sementara, silakan gunakan akun
-              yang sudah terdaftar.
-            </p>
-            <a href="{{ url_for('main.masuk') }}" class="btn btn-sl">
-              <i class="bi bi-box-arrow-in-right me-1"></i> Ke Halaman Masuk
-            </a>
+          <div class="auth-body">
+            <!-- Manfaat akun -->
+            <ul class="perks list-unstyled">
+              <li><i class="bi bi-bar-chart-line" aria-hidden="true"></i> Peluang 4 kategori</li>
+              <li><i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat tersimpan</li>
+              <li><i class="bi bi-shield-lock" aria-hidden="true"></i> Password aman</li>
+            </ul>
+
+            <!-- Bar kemajuan. Lebarnya diisi daftar.js -->
+            <div class="form-progress mb-3" aria-hidden="true"><span id="formProgress"></span></div>
+
+            <div id="formAlert" aria-live="polite">
+              {% if error %}
+              <div class="alert alert-danger py-2 mb-3" role="alert">{{ error }}</div>
+              {% endif %}
+            </div>
+
+            <form id="signupForm" method="POST" action="{{ url_for('main.daftar') }}" novalidate>
+
+              <!-- Nama lengkap -->
+              <div class="mb-3 field">
+                <label class="form-label" for="nama_lengkap">Nama lengkap</label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                  <input
+                    type="text"
+                    class="form-control{% if errors.get('nama_lengkap') %} is-invalid{% endif %}"
+                    id="nama_lengkap"
+                    name="nama_lengkap"
+                    value="{{ form.get('nama_lengkap', '') }}"
+                    placeholder="Contoh Andi Pratama"
+                    autocomplete="name"
+                    maxlength="100"
+                    required
+                  />
+                  <div class="invalid-feedback">{{ errors.get('nama_lengkap') or 'Nama lengkap harus 2 sampai 100 karakter.' }}</div>
+                </div>
+              </div>
+
+              <!-- Username -->
+              <div class="mb-3 field">
+                <label class="form-label" for="username">Username</label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text"><i class="bi bi-at" aria-hidden="true"></i></span>
+                  <input
+                    type="text"
+                    class="form-control{% if errors.get('username') %} is-invalid{% endif %}"
+                    id="username"
+                    name="username"
+                    value="{{ form.get('username', '') }}"
+                    placeholder="andi.pratama"
+                    autocomplete="username"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    maxlength="30"
+                    required
+                  />
+                  <div class="invalid-feedback">{{ errors.get('username') or 'Username 3 sampai 30 karakter. Gunakan huruf, angka, titik, atau garis bawah.' }}</div>
+                </div>
+                <div class="form-text">Huruf, angka, titik, dan garis bawah. Disimpan dalam huruf kecil.</div>
+              </div>
+
+              <!-- Password -->
+              <div class="mb-3 field">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
+                  <input
+                    type="password"
+                    class="form-control{% if errors.get('password') %} is-invalid{% endif %}"
+                    id="password"
+                    name="password"
+                    placeholder="Minimal 8 karakter"
+                    autocomplete="new-password"
+                    maxlength="128"
+                    required
+                  />
+                  <button class="btn btn-outline-secondary pw-toggle" type="button" data-target="password" aria-label="Tampilkan password">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                  </button>
+                  <div class="invalid-feedback">{{ errors.get('password') or 'Password minimal 8 karakter dan memuat huruf serta angka.' }}</div>
+                </div>
+
+                <div class="strength-row" aria-live="polite">
+                  <div class="strength" id="strength" data-level="0" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                  <span class="strength-label" id="strengthLabel">Belum diisi</span>
+                </div>
+
+                <ul class="pw-rules" id="pwRules">
+                  <li data-rule="len"><i class="bi bi-circle" aria-hidden="true"></i> Minimal 8 karakter</li>
+                  <li data-rule="letter"><i class="bi bi-circle" aria-hidden="true"></i> Ada huruf</li>
+                  <li data-rule="digit"><i class="bi bi-circle" aria-hidden="true"></i> Ada angka</li>
+                  <li data-rule="symbol"><i class="bi bi-circle" aria-hidden="true"></i> Ada simbol (disarankan)</li>
+                </ul>
+              </div>
+
+              <!-- Ulangi password -->
+              <div class="mb-3 field">
+                <label class="form-label" for="password2">Ulangi password</label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text"><i class="bi bi-lock-fill" aria-hidden="true"></i></span>
+                  <input
+                    type="password"
+                    class="form-control{% if errors.get('password2') %} is-invalid{% endif %}"
+                    id="password2"
+                    name="password2"
+                    placeholder="Ketik ulang password"
+                    autocomplete="new-password"
+                    maxlength="128"
+                    required
+                  />
+                  <button class="btn btn-outline-secondary pw-toggle" type="button" data-target="password2" aria-label="Tampilkan password">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                  </button>
+                  <div class="invalid-feedback">{{ errors.get('password2') or 'Konfirmasi password tidak cocok.' }}</div>
+                </div>
+              </div>
+
+              <!-- Persetujuan -->
+              <div class="mb-3 field agree">
+                <div class="form-check">
+                  <input
+                    class="form-check-input{% if errors.get('agree') %} is-invalid{% endif %}"
+                    type="checkbox"
+                    id="agree"
+                    name="agree"
+                    required
+                  />
+                  <label class="form-check-label" for="agree">
+                    Saya memahami hasil klasifikasi bersifat indikatif dan bukan diagnosis medis.
+                    <a href="{{ url_for('main.tentang') }}">Baca batasan sistem</a>
+                  </label>
+                  <div class="invalid-feedback">{{ errors.get('agree') or 'Centang pernyataan ini untuk melanjutkan.' }}</div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-sl btn-lg w-100" id="btnSignup">
+                <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Buat akun
+              </button>
+            </form>
+
+            <p class="auth-switch">Sudah punya akun? <a href="{{ url_for('main.masuk') }}">Masuk</a></p>
           </div>
         </div>
       </div>
@@ -56,5 +196,6 @@
     <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script src="{{ url_for('static', filename='js/efek.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/daftar.js') }}"></script>
   </body>
 </html>

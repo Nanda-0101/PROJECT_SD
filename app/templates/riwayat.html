@@ -29,12 +29,65 @@
       <!-- Keterangan yang hanya muncul saat dicetak -->
       <p class="print-only" id="printMeta"></p>
 
-      <h1 class="page-title">
-        <i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat Klasifikasi
-      </h1>
+      <div class="hist-head d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+        <div>
+          <h1 class="page-title mb-1">
+            <i class="bi bi-clock-history" aria-hidden="true"></i> Riwayat Klasifikasi
+          </h1>
+          <p class="page-sub">Pantau hasil klasifikasi Anda dari waktu ke waktu. Saring, ekspor, atau hapus kapan saja.</p>
+        </div>
+        <a class="btn btn-sl" href="{{ url_for('main.klasifikasi') }}">
+          <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Klasifikasi baru
+        </a>
+      </div>
 
       <!-- Pesan error saat data gagal dimuat. Diisi oleh riwayat.js -->
       <div class="alert alert-danger mb-3" id="loadError" role="alert" hidden></div>
+
+      <!-- ===== RINGKASAN STATISTIK ===== -->
+      <section class="mb-3" aria-label="Ringkasan riwayat">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+          <div class="col">
+            <div class="stat-card is-primary">
+              <div class="stat-icon"><i class="bi bi-collection" aria-hidden="true"></i></div>
+              <div class="stat-value" id="riwayatTotal">0</div>
+              <div class="stat-label">Total Klasifikasi</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></div>
+              <div class="stat-value" id="riwayatAvgConf">0%</div>
+              <div class="stat-label">Rata-rata Keyakinan</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-arrow-up-circle" aria-hidden="true"></i></div>
+              <div class="stat-value" id="riwayatMaxConf">0%</div>
+              <div class="stat-label">Keyakinan Tertinggi</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-arrow-down-circle" aria-hidden="true"></i></div>
+              <div class="stat-value" id="riwayatMinConf">0%</div>
+              <div class="stat-label">Keyakinan Terendah</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-trophy" aria-hidden="true"></i></div>
+              <div class="stat-value stat-value-sm" id="riwayatTopCat">—</div>
+              <div class="stat-label">Kategori Terbanyak</div>
+            </div>
+          </div>
+        </div>
+        <p class="small text-muted mt-2 mb-0">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          Ringkasan mengikuti filter pencarian, kategori, dan rentang waktu yang sedang aktif.
+        </p>
+      </section>
 
       <!-- ===== FILTER ===== -->
       <section class="sl-card mb-3" aria-label="Filter riwayat">
@@ -83,6 +136,14 @@
           </div>
         </div>
       </section>
+
+      <!-- Sebaran kategori. Lebar tiap segmen diatur oleh riwayat.js -->
+      <div class="dist" id="distBar" role="img" aria-label="Sebaran kategori pada hasil yang ditampilkan" hidden>
+        <i class="cat-under" data-key="under"></i>
+        <i class="cat-normal" data-key="normal"></i>
+        <i class="cat-over" data-key="over"></i>
+        <i class="cat-obese" data-key="obese"></i>
+      </div>
 
       <!-- Chip kategori. Angka dan status aktif diatur oleh riwayat.js -->
       <div class="chip-row mb-3" id="catChips" role="group" aria-label="Filter cepat kategori">
@@ -182,43 +243,6 @@
           </div>
         </div>
       </section>
-
-      <!-- ===== RINGKASAN STATISTIK ===== -->
-      <h2 class="section-title">
-        <i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i> Ringkasan Riwayat
-      </h2>
-
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="sl-card h-100">
-            <div class="sl-card-head">
-              <i class="bi bi-speedometer2" aria-hidden="true"></i> Ringkasan Statistik
-            </div>
-            <div class="sl-card-body">
-              <div class="sum-row">
-                <span class="text-muted">Total Klasifikasi</span><b id="riwayatTotal">0</b>
-              </div>
-              <div class="sum-row">
-                <span class="text-muted">Rata-rata Keyakinan</span><b id="riwayatAvgConf">0%</b>
-              </div>
-              <div class="sum-row">
-                <span class="text-muted">Keyakinan Tertinggi</span><b id="riwayatMaxConf">0%</b>
-              </div>
-              <div class="sum-row">
-                <span class="text-muted">Keyakinan Terendah</span><b id="riwayatMinConf">0%</b>
-              </div>
-              <div class="sum-row">
-                <span class="text-muted">Kategori Terbanyak</span><b id="riwayatTopCat">—</b>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <p class="small text-muted mt-3 mb-0">
-        <i class="bi bi-info-circle" aria-hidden="true"></i>
-        Ringkasan mengikuti filter pencarian, kategori, dan rentang waktu yang sedang aktif.
-      </p>
     </main>
 
     <div id="site-footer">

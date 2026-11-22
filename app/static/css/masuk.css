@@ -1,7 +1,4 @@
-/* ==========================================================================
-   Kartu Masuk & Daftar (dipakai bersama oleh kedua halaman)
-   Variabel seperti --r-xl, --sl-blue, --sl-muted berasal dari common.css.
-   ========================================================================== */
+/* Kartu Masuk & Daftar (dipakai bersama oleh kedua halaman) */
 
 /* Pembungkus: menaruh kartu di tengah, sedikit di bawah atas halaman */
 .auth-wrap {
@@ -52,9 +49,7 @@
   color: var(--sl-muted);
 }
 
-/* ---------- Tombol mata (tampilkan/sembunyikan password) ----------
-   Sebelumnya memakai !important. Sekarang cukup mengganti variabel warna milik tombol Bootstrap,
-   hasilnya sama tetapi tidak "memaksa" dan mudah ditimpa bila perlu. */
+/* ---------- Tombol mata (tampilkan/sembunyikan password) ---------- */
 
 .pw-toggle {
   --bs-btn-color: #6b7385;

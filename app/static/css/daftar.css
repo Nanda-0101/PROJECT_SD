@@ -1,8 +1,4 @@
-/* ==========================================================================
-   Halaman Daftar: meter kekuatan password
-   daftar.js mengisi atribut data-level (1-4) pada elemen .strength,
-   lalu CSS di bawah mewarnai kotak sebanyak level tersebut.
-   ========================================================================== */
+/* Halaman Daftar */
 
 .strength {
   --c-good: #7cb342; /* warna level 3 ("Baik"); level lain memakai warna dari common.css */
@@ -47,7 +43,7 @@
   width: 0; /* lebar diisi JS */
   height: 100%;
   border-radius: 99px;
-  background: var(--sl-blue);
+  background: linear-gradient(90deg, #3b8dff, var(--sl-blue));
   transition: width 0.4s;
 }
 
@@ -65,6 +61,9 @@
 }
 
 .pw-rules li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   transition: color 0.25s;
 }
 
@@ -74,9 +73,136 @@
   font-weight: 600;
 }
 
+/* ---------- Kartu pendaftaran ---------- */
+
+/* Sedikit lebih lebar dari kartu Masuk karena isinya lebih banyak */
+.auth-card-lg {
+  max-width: 520px;
+  animation: card-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* Manfaat akun dalam bentuk chip kecil */
+.perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 1.1rem;
+  padding: 0;
+}
+
+.perks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--sl-blue-soft);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--sl-blue-deep);
+}
+
+/* ---------- Meter kekuatan password ---------- */
+
+.strength-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.strength-row .strength {
+  flex: 1;
+}
+
+.strength-label {
+  min-width: 4.6rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-align: right;
+  color: var(--sl-muted);
+  transition: color 0.25s;
+}
+
+.strength-label[data-level="1"] {
+  color: var(--c-obese);
+}
+.strength-label[data-level="2"] {
+  color: #b87a00; /* oranye lebih gelap agar terbaca di latar putih */
+}
+.strength-label[data-level="3"] {
+  color: #5c8a1f;
+}
+.strength-label[data-level="4"] {
+  color: var(--c-normal);
+}
+
+/* ---------- Kotak persetujuan ---------- */
+
+.agree .form-check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--sl-line);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.agree .form-check-input {
+  flex: none;
+  float: none;
+  margin: 0.15rem 0 0;
+}
+
+.agree .form-check-label {
+  flex: 1;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.agree .form-check-label a {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.agree .invalid-feedback {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* Cincin fokus pada tombol mata, senada dengan kolom input */
+.pw-toggle:focus-visible {
+  z-index: 3;
+  border-color: var(--sl-blue);
+  box-shadow: 0 0 0 4px rgba(10, 108, 240, 0.16);
+  outline: 0;
+}
+
+@media (max-width: 479.98px) {
+  .pw-rules {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Hormati pengguna yang mematikan animasi di pengaturan perangkatnya */
 @media (prefers-reduced-motion: reduce) {
+  .auth-card-lg {
+    animation: none;
+  }
+
   .strength span,
+  .strength-label,
   .form-progress span,
   .pw-rules li {
     transition: none;

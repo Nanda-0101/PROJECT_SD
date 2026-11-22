@@ -1,9 +1,6 @@
-/* ==========================================================================
+/* 
    efek.css
-   Poles tampilan yang dipakai bersama oleh Beranda, Riwayat, dan Daftar.
-   Warna dan desain lama tidak diganti. Semua warna di sini memakai variabel
-   yang sudah ada (--sl-blue, --sl-blue-soft, --sl-line) jadi tema tetap sama.
-   ========================================================================== */
+   */
 
 /* ---------- Dasar halaman ---------- */
 
@@ -74,7 +71,7 @@ body {
   background-color: color-mix(in srgb, var(--sl-blue) 6%, transparent); /* baris yang disorot ikut berwarna */
 }
 
-/* ---------- Kartu dengan cahaya yang mengikuti kursor (dibuat efek.js) ---------- */
+/* ---------- Kartu dengan cahaya yang mengikuti kursor (efek.js) ---------- */
 
 .fx-card {
   position: relative;
