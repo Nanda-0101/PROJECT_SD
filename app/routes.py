@@ -44,9 +44,48 @@ def keluar():
     return redirect(url_for("main.beranda"))
 
 
-@main_bp.route("/daftar")
+@main_bp.route("/daftar", methods=["GET", "POST"])
 def daftar():
-    return render_template("daftar.html")
+    if session.get("user_id"):
+        return redirect(url_for("main.klasifikasi"))
+
+    error = None
+    nama_lengkap = ""
+    username = ""
+
+    if request.method == "POST":
+        nama_lengkap = (request.form.get("nama_lengkap") or "").strip()
+        username = (request.form.get("username") or "").strip().lower()
+        password = request.form.get("password") or ""
+        konfirmasi_password = request.form.get("konfirmasi_password") or ""
+
+        if not nama_lengkap or not username or not password:
+            error = "Nama lengkap, username, dan password wajib diisi."
+        elif konfirmasi_password and password != konfirmasi_password:
+            error = "Konfirmasi password tidak cocok."
+        elif User.query.filter(db.func.lower(User.username) == username).first():
+            error = "Username sudah digunakan, silakan pilih yang lain."
+        else:
+            user_baru = User(
+                nama_lengkap=nama_lengkap,
+                username=username,
+            )
+            user_baru.set_password(password)
+
+            db.session.add(user_baru)
+            db.session.commit()
+
+            session.clear()
+            session["user_id"] = user_baru.id_user
+            session.permanent = True
+            return redirect(url_for("main.klasifikasi"))
+
+    return render_template(
+        "daftar.html",
+        error=error,
+        nama_lengkap=nama_lengkap,
+        username=username,
+    )
 
 
 @main_bp.route("/klasifikasi")
